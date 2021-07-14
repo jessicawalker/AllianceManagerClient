@@ -5,26 +5,26 @@ import { Link, useHistory } from "react-router-dom";
 import styles from './Auth.module.css'; 
 
 export default function Login() {
-    const emailRef = useRef()
-    const passwordRef = useRef()
-    const { login } = useAuth()
-    const [error, setError] = useState('')
-    const [loading, setLoading] = useState(false)
-    const history = useHistory()
+    const emailRef = useRef();
+    const passwordRef = useRef();
+    const { login } = useAuth();
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const history = useHistory();
     
     async function handleSubmit(e) {
-        e.preventDefault()
+        e.preventDefault();
     
         try {
-            setError('')
-            setLoading(true)
-            await login(emailRef.current.value, passwordRef.current.value)
-            history.push("/")
+            setError('');
+            setLoading(true);
+            await login(emailRef.current.value, passwordRef.current.value);
+            history.push("/");
         } catch {
-            setError('Failed to log in')
+            setError('Failed to log in');
         }
     
-        setLoading(false)
+        setLoading(false);
     
     }
     
