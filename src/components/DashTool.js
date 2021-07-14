@@ -1,9 +1,5 @@
-import React, { useState } from 'react';
-import { Card, Button, Alert } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
-import { Link, useHistory } from 'react-router-dom';
-//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-//import { fas } from 'fontawesome.macro';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import styles from './Dash.module.css';
 
 export default function DashTool(props) {
