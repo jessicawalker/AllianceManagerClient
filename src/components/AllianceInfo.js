@@ -1,10 +1,9 @@
 import React, { useRef, useState, Component } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
-import { useAuth } from '../contexts/AuthContext';
 import { Link, useHistory } from "react-router-dom";
-import AllianceService from "../services/services";
+//import AllianceService from "../services/services";
 import axios from "../axios";
-import styles from './Auth.module.css'; 
+//import styles from './Auth.module.css'; 
 
 export default class AllianceInfo extends Component {
     constructor(props) {
@@ -27,28 +26,28 @@ export default class AllianceInfo extends Component {
                 const hideStyle = {
                     display: 'none'
                 };
-                console.log(data);
+                
                 const alliances = data.results.map(u =>
-                    <div>
-                    <p style={hideStyle}>{u._id} - {u.alliance_name} - {u.game_name}</p>
-                    <Card>
-                        <Card.Body>
-                            <h2 className="text-center mb-4">Update Alliance</h2>
-                            <Form>
-                                <Form.Group id="allianceName">
-                                    <Form.Label style={labelStyle}>Alliance Name</Form.Label>
-                                    <Form.Control type="text" required defaultValue={u.alliance_name} />
-                                </Form.Group>
-                                <Form.Group id="gameName">
-                                    <Form.Label style={labelStyle}>Game Name</Form.Label>
-                                    <Form.Control type="text" required defaultValue={u.game_name} />
-                                </Form.Group>
-                                <Button className="w-100" style={btnStyle} type="submit">
-                                    Update
-                                </Button>
-                            </Form>
-                        </Card.Body>
-                    </Card>
+                    <div key={u._id}>
+                        <p style={hideStyle}>{u._id} - {u.alliance_name} - {u.game_name}</p>
+                        <Card>
+                            <Card.Body>
+                                <h2 className="text-center mb-4">Update Alliance</h2>
+                                <Form>
+                                    <Form.Group id="allianceName">
+                                        <Form.Label style={labelStyle}>Alliance Name</Form.Label>
+                                        <Form.Control type="text" required defaultValue={u.alliance_name} />
+                                    </Form.Group>
+                                    <Form.Group id="gameName">
+                                        <Form.Label style={labelStyle}>Game Name</Form.Label>
+                                        <Form.Control type="text" required defaultValue={u.game_name} />
+                                    </Form.Group>
+                                    <Button className="w-100" style={btnStyle} type="submit">
+                                        Update
+                                    </Button>
+                                </Form>
+                            </Card.Body>
+                        </Card>
                     </div>
                 )
                 

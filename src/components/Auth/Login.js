@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Link, useHistory } from "react-router-dom";
 import styles from './Auth.module.css'; 
 
@@ -46,7 +46,7 @@ export default function Login() {
                         <Button disabled={loading} className="w-100 mt-3" type="submit">Log In</Button>
                     </Form>
                     <div className="w-100 text-center mt-3">
-                         <Link to="/forgot-password">Forgot Password?</Link>
+                        <Link to="/forgot-password">Forgot Password?</Link>
                     </div>
                 </Card.Body>
             </Card>

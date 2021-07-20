@@ -1,17 +1,17 @@
 import React, { useRef, useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Link, useHistory } from "react-router-dom";
-import styles from './Auth.module.css'; 
+//import styles from './Auth.module.css'; 
 
 export default function UpdateProfile() {
-    const emailRef = useRef()
-    const passwordRef = useRef()
-    const passwordConfirmRef = useRef()
-    const { currentUser, updatePassword, updateEmail } = useAuth()
-    const [error, setError] = useState('')
-    const [loading, setLoading] = useState(false)
-    const history = useHistory()
+    const emailRef = useRef();
+    const passwordRef = useRef();
+    const passwordConfirmRef = useRef();
+    const { currentUser, updatePassword, updateEmail } = useAuth();
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const history = useHistory();
     const labelStyle = {
         marginTop: '1em'
     };
@@ -20,33 +20,33 @@ export default function UpdateProfile() {
     };
 
     async function handleSubmit(e) {
-        e.preventDefault()
+        e.preventDefault();
 
         if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-            return setError('Passwords do not match')
+            return setError('Passwords do not match');
         }
 
-        const promises = []
-        setLoading(true)
-        setError('')
+        const promises = [];
+        setLoading(true);
+        setError('');
 
         if (emailRef.current.value !== currentUser.email) {
-            promises.push(updateEmail(emailRef.current.value))
+            promises.push(updateEmail(emailRef.current.value));
         }
         if (passwordRef.current.value) {
-            promises.push(updatePassword(passwordRef.current.value))
+            promises.push(updatePassword(passwordRef.current.value));
         }
 
         Promise.all(promises)
         .then(() => {
-            history.push("/")
+            history.push("/");
         })
         .catch(() => {
-            setError("Failed to update account")
+            setError("Failed to update account");
         })
         .finally(() => {
-            setLoading(false)
-        })
+            setLoading(false);
+        });
     }
 
     return (
