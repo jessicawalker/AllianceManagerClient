@@ -26,7 +26,6 @@ export default function AllianceInfo() {
             const result = await axios(
                 '/allianceprofile',
             );
-
             setAllianceData(result.data.results[0]);
         };
 
@@ -37,16 +36,40 @@ export default function AllianceInfo() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        await axios.post('/allianceprofile', {
-            alliance_name: allianceNameRef.current.value,
-            game_name: gameNameRef.current.value
-        })
-            .then(function (response) {
-                console.log(response);
+        const enteredAllianceName = allianceNameRef.current.value;
+        const enteredGameName = gameNameRef.current.value;
+        const currentId = allianceData._id;
+
+        // should there also be a setAlData here?
+        if (enteredAllianceName == "" && enteredGameName == "") {
+            return;
+        }
+        
+        if (currentId === "") {  // new entry
+            await axios.post('/allianceprofile-add', {
+                _id: currentId,
+                alliance_name: enteredAllianceName,
+                game_name: enteredGameName
             })
-            .catch(function (error) {
-                console.log(error);
-            });
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        } else {    // update entry
+            await axios.put(`/allianceprofile-update/${currentId}`, {
+                alliance_name: enteredAllianceName,
+                game_name: enteredGameName
+            })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
     }
 
 
