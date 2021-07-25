@@ -33,8 +33,8 @@ export default function Dashboard() {
                     { error && <Alert variant="danger">{ error }</Alert>}
                     <DashTool goto="/update-profile" img="plus" pageName="Add New Activity" />
                     <DashTool goto="/update-profile" img="edit" pageName="Activity Logs" />
-                    <DashTool goto="/update-profile" img="multiple-users-silhouette" pageName="Members" />
-                    <DashTool goto="/update-profile" img="settings" pageName="Tracking Setup" />
+                    <DashTool goto="/members" img="multiple-users-silhouette" pageName="Members" />
+                    <DashTool goto="/tracking-setup" img="settings" pageName="Tracking Setup" />
                     <DashTool goto="/alliance-info" img="gamepad" pageName="Alliance Profile" />
                     <DashTool goto="/update-profile" img="user" pageName="Account Profile" />
                 </Card.Body>

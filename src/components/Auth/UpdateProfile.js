@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useHistory } from "react-router-dom";
-//import styles from './Auth.module.css'; 
+import styles from './Auth.module.css'; 
 
 export default function UpdateProfile() {
     const emailRef = useRef();
@@ -50,7 +50,7 @@ export default function UpdateProfile() {
     }
 
     return (
-        <>
+        <div className={styles.containWidth}>
             <Card>
                 <Card.Body>
                     <h2 className="text-center mb-4">Update Profile</h2>
@@ -77,6 +77,6 @@ export default function UpdateProfile() {
             <div className="w-100 text-center mt-2">
                 <Link to="/">Cancel</Link>
             </div>
-        </>
+        </div>
     )
 }

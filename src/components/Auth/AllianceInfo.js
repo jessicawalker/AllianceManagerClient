@@ -2,8 +2,8 @@ import React, { useRef, useState, useEffect } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 //import AllianceService from "../services/services";
-import axios from "../axios";
-//import styles from './Auth.module.css'; 
+import axios from "../../axios";
+import styles from './Auth.module.css'; 
 
 export default function AllianceInfo() {
 
@@ -41,7 +41,7 @@ export default function AllianceInfo() {
         const currentId = allianceData._id;
 
         // should there also be a setAlData here?
-        if (enteredAllianceName == "" && enteredGameName == "") {
+        if (enteredAllianceName === "" && enteredGameName === "") {
             return;
         }
         
@@ -75,9 +75,8 @@ export default function AllianceInfo() {
 
 
     return (
-        <div>
+        <div className={styles.containWidth}>
             <div key={allianceData._id}>
-                <p style={hideStyle}>{allianceData._id} - {allianceData.alliance_name} - {allianceData.game_name}</p>
                 <Card>
                     <Card.Body>
                         <h2 className="text-center mb-4">Update Alliance</h2>
