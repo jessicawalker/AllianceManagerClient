@@ -1,0 +1,5 @@
+.rowDefault td {
+    border-bottom: 1px solid cornflowerblue;
+    border-top: 1px solid cornflowerblue;
+    padding: 3px 15px;
+}

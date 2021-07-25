@@ -42,7 +42,7 @@ import styles from './Members.module.css';
                 />
     */
 export default function MemberList(props) {
-    const [memberData, setMemberData] = useState({});
+    const [memberData, setMemberData] = useState([{}]);
 
     // read alliance data
     useEffect(() => {
@@ -50,10 +50,10 @@ export default function MemberList(props) {
             const result = await axios(
                 '/members',
             );
-            setMemberData(result.data.results[0]);
-            console.log(result.data.results[0]);
-            console.log(memberData);
-            console.log(memberData.member_role);
+            setMemberData(result.data.results);
+            //console.log(result.data.results[0]);
+            //console.log(memberData);
+            //console.log(memberData.member_role);
         };
 
         fetchData();
@@ -61,23 +61,25 @@ export default function MemberList(props) {
 
     return (
         <table className={styles.centerTable}>
-            <thead>
+            <thead className={styles.theadDefault}>
                 <tr>
                     <th>Username</th>
                     <th>Role</th>
                     <th>Notes</th>
                     <th>Current</th>
+                    <th>Date Added</th>
                 </tr>
             </thead>
             <tbody>
-            <RowTool key="memberData._id" 
+            {memberData.map((member) => (<RowTool key="member._id" 
                     dataDisplay="MemberList" 
-                    username={memberData.member_username} 
-                    memberRole={memberData.member_role} 
-                    memberNotes={memberData.member_notes} 
-                    currentMember={memberData.current_member}
-                    memberAddedDate={memberData.member_added_date}
+                    username={member.member_username} 
+                    memberRole={member.member_role} 
+                    memberNotes={member.member_notes} 
+                    currentMember={member.current_member}
+                    memberAddedDate={member.member_added_date}
                 />
+                ))}
             </tbody>
             
         </table>

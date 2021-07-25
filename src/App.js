@@ -11,7 +11,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import UpdateProfile from "./components/Auth/UpdateProfile";
 import AllianceInfo from "./components/Auth/AllianceInfo";
-import TrackingSetup from "./components/TrackingSetup";
+import TrackingSetup from "./components/TrackingSetup/TrackingSetup";
 import Members from "./components/Members/Members";
 import './styles.css';
 
