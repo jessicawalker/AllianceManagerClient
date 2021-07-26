@@ -3,3 +3,8 @@
     border-top: 1px solid cornflowerblue;
     padding: 3px 15px;
 }
+
+.addSection {
+    padding: 2em;
+    text-align: center;
+}

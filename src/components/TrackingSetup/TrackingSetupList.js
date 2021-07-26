@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Form, Button, Card, Alert } from "react-bootstrap";
+import { Table, Form, Button, Card, Alert } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import RowTool from '../Row/RowTool';
 import axios from "../../axios";
@@ -93,6 +93,8 @@ import styles from './TrackingSetup.module.css';
     */
 export default function TrackingSetupList(props) {
     const [criteriaData, setCriteriaData] = useState([{}]);
+    const criteriaNameRef = useRef();
+    const criteriaDatatypeRef = useRef();
 
     // read alliance data
     useEffect(() => {
@@ -100,32 +102,70 @@ export default function TrackingSetupList(props) {
             const result = await axios(
                 '/trackingcriteria',
             );
-            setCriteriaData(result.data.results);   // map, repeating display
-            //console.log(result.data.results[1]);
-            console.log(criteriaData);
-            //console.log(criteriaData.criteria_name);
+            setCriteriaData(result.data.results);
         };
 
         fetchData();
     }, []);
+    // onSubmit, update the form data
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        const enteredCriteriaName = criteriaNameRef.current.value;
+        const enteredCriteriaDatatype = criteriaDatatypeRef.current.value;
+        const currentId = criteriaData._id;
+
+        // should there also be a setAlData here?
+        if (enteredCriteriaName === "" || enteredCriteriaDatatype === "") {
+            return;
+        }
+        
+        if (currentId === "") {  // new entry
+            await axios.post('/trackingcriteria-add', {
+                criteria_name: enteredCriteriaName,
+                criteria_datatype: enteredCriteriaDatatype
+            })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        } else {    // update entry
+            await axios.put(`/trackingcriteria-update/${currentId}`, {
+                criteria_name: enteredCriteriaName,
+                criteria_datatype: enteredCriteriaDatatype
+            })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+    }
 
     return (
-        <table className={styles.centerTable}>
-            <thead className={styles.theadDefault}>
+        <Table className="table" striped bordered hover responsive="md">
+            <thead className="thead-dark">
                 <tr>
                     <th>Criteria Name</th>
                     <th>Criteria Datatype</th>
+                    <th colspan="2"></th>
                 </tr>
             </thead>
             <tbody>
-            {criteriaData.map((criteria) => (<RowTool key="criteria._id" 
+            {criteriaData.map((criteria) => (<RowTool key={criteria._id} 
+                    idValue={criteria._id}
                     dataDisplay="Criteria" 
                     criteriaName={criteria.criteria_name} 
                     criteriaDatatype={criteria.criteria_datatype} 
+                    crudState="view"
                 />
                 ))}
             </tbody>
             
-        </table>
+        </Table>
     )
 }

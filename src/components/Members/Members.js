@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import MemberList from './MemberList';
+import RowAdd from '../Row/RowAdd';
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import axios from "../../axios";
@@ -31,12 +32,16 @@ export default function Members() {
     )}*/
 
     
-    const [memberData, setMemberData] = useState({});
+    //const [memberData, setMemberData] = useState({});
 
     return (
         <div>
             <h2 className="text-center mb-4">Members</h2>
-            <MemberList members="none" />
+
+            <Form>
+                <MemberList crudState="view" />
+                <RowAdd addType="Member" dataDisplay="MemberList" />
+            </Form>
         </div>
     )
 }
