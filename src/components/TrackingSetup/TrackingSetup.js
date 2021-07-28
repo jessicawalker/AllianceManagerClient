@@ -7,13 +7,10 @@ import axios from "../../axios";
 
 export default function TrackingSetup() {
     return (
-        <div>
+        <div className="navGap">
             <h2 className="text-center mb-4">Tracking Setup</h2>
-
-            <Form>
                 <TrackingSetupList crudState="view" />
                 <RowAdd addType="Tracking Criteria" dataDisplay="Criteria" />
-            </Form>
         </div>
     )
 }

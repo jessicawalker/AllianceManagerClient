@@ -34,14 +34,12 @@ export default function Members() {
     
     //const [memberData, setMemberData] = useState({});
 
-    return (
-        <div>
-            <h2 className="text-center mb-4">Members</h2>
 
-            <Form>
-                <MemberList crudState="view" />
-                <RowAdd addType="Member" dataDisplay="MemberList" />
-            </Form>
+    return (
+        <div className="navGap">
+            <h2 className="text-center mb-4">Members</h2>
+            <MemberList crudState="view" />
+            <RowAdd addType="Member" dataDisplay="MemberList" />
         </div>
     )
 }

@@ -1,70 +1,203 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Form, FormCheck, Button, Card, Alert } from "react-bootstrap";
 import FloatingLabel from "react-bootstrap-floating-label";
 import Switch from "react-switch";
 import { Link, useHistory } from 'react-router-dom';
+import axios from "../../axios";
 import styles from './Row.module.css'; 
 
 export default function RowTool(props) {
-    const [rowType, setRowType] = useState(props.crudState);     // types: view, edit, create, delete
-    //const [checked, setChecked] = useState(true);
+    const [rowType, setRowType] = useState(props.crudState);       // types: view, edit, create, delete
+    //const [showAdd, setShowAdd] = useState(props.addView);
+    const [memberUsername, setMemberUsername] = useState(props.username);
+    const [memberRole, setMemberRole] = useState(props.memberRole);
+    const [memberNotes, setMemberNotes] = useState(props.memberNotes);
+    const [currentMember, setCurrentMember] = useState(props.currentMember);
+    const [memberAddedDate, setMemberAddedDate] = useState(props.memberAddedDate);
+    const [criteriaName, setCriteriaName] = useState(props.criteriaName);
+    const [criteriaDatatype, setCriteriaDatatype] = useState(props.criteriaDatatype);
+    const [entryId, setEntryId] = useState(props.idValue);
+    const [dataDisplay, setDataDisplay] = useState(props.dataDisplay);
+    let history = useHistory();
+
+    // current
+    const memberUsernameRef = useRef();
+    const memberRoleRef = useRef();
+    const memberNotesRef = useRef();
+    const currentMemberRef = useRef();
+    const memberAddedDateRef = useRef();
+
+    // current
+    const criteriaNameRef = useRef();
+    const criteriaDatatypeRef = useRef();
 
 
-    async function handleSubmit(e) {
+    async function handleClickUpdate(e) {
         e.preventDefault();
+        setRowType("view");
+
+        if (dataDisplay==="MemberList"){
+            const enteredMemberUsername = memberUsernameRef.current.value;
+            const enteredMemberRole = memberRoleRef.current.value;
+            const enteredMemberNotes = memberNotesRef.current.value;
+
+            setMemberUsername(enteredMemberUsername);
+            setMemberRole(enteredMemberRole);
+            setMemberNotes(enteredMemberNotes);
+            //if (props.idValue.length > 0)
+            //   {} //memberData._id;
+
+            const updateMemberData = {
+                _id: entryId,
+                member_username: enteredMemberUsername, 
+                member_role: enteredMemberRole,
+                member_notes: enteredMemberNotes,
+                current_member: currentMember
+            };
+            console.log(updateMemberData);
+            await props.onUpdateData(updateMemberData);
+        }
+        if (dataDisplay==="Criteria"){
+            const enteredCriteriaName = criteriaNameRef.current.value;
+            const enteredCriteriaDatatype = criteriaDatatypeRef.current.value;
+            //const currentId = entryId;
+
+            setCriteriaName(enteredCriteriaName);
+            setCriteriaDatatype(enteredCriteriaDatatype);
+            //if (props.idValue.length > 0)
+            //   {} //memberData._id;
+
+            const updateCriteriaData = {
+                _id: entryId,
+                criteria_name: enteredCriteriaName, 
+                criteria_datatype: enteredCriteriaDatatype
+            };
+            await props.onUpdateData(updateCriteriaData);
+        }
+    }
+
+    async function handleClickAdd(e) {
+        e.preventDefault();
+
+        if (dataDisplay==="MemberList"){
+            console.log("Value of currentMember: " + currentMember);
+            //if (props.idValue.length > 0)
+            //   {} //memberData._id;
+
+            const newMemberData = {
+                member_username: memberUsername, 
+                member_role: memberRole,
+                member_notes: memberNotes,
+                current_member: currentMember
+            };
+            console.log("New member data: " + newMemberData.current_member);
+            await props.onSaveData(newMemberData);
+        }
+        if (dataDisplay==="Criteria"){
+
+            //if (props.idValue.length > 0)
+            //   {} //memberData._id;
+
+            const newCriteriaData = {
+                criteria_name: criteriaName, 
+                criteria_datatype: criteriaDatatype
+            };
+            console.log(newCriteriaData.criteria_name);
+            console.log(newCriteriaData.criteria_datatype);
+            await props.onSaveData(newCriteriaData);
+        }
+        setRowType("view");
+        props.showAdd(false);
+
+        if (dataDisplay==="MemberList"){
+            history.push('/members');
+        }
+        if (dataDisplay==="Criteria"){
+            history.push('/tracking-setup');
+        }
+    }
+
+    async function handleClickDelete(e) {
+        e.preventDefault();
+        setRowType("view");
+        setDataDisplay("");
+        await props.onDeleteData(entryId);
+    }
+    
+    // Cancel
+    async function handleClickCancel(e) {
+        e.preventDefault();
+        if (dataDisplay==="MemberList"){
+            history.push('/members');
+        }
+        if (dataDisplay==="Criteria"){
+            history.push('/tracking-setup');
+        }
+    setRowType("view");
+    props.showAdd(false);
     }
 
     return (
-            // click and drag on outer left
-            // name, with two states:
-            //      1) viewed
-            //      2) input field to edit
-            // if page = members, also includes:
-            //      1) role text field 
-            //      2) notes text field
-            //      3) current members checkbox 
-            // if page = make tracking criteria, also include:
-            //      1) data type dropdown 
-            // edit, remove, add buttons to the right
-            // <td class="form-check form-switch">
-            //      <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-            //      <label class="form-check-label" for="flexSwitchCheckDefault">Default switch checkbox input</label>
-            // </td>
 
         <tr className="align-middle border-top border-bottom">
-            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={props.username} /></td>}
-            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Control type="text" required defaultValue={props.username} /></td>}
-            {props.dataDisplay==="MemberList" && rowType==="create" && <td><FloatingLabel controlId="floatingMemberUsername" label="Username"><Form.Control type="text" placeholder="Username" required /></FloatingLabel></td>}
+            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={memberUsername} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Control type="text" required defaultValue={memberUsername} ref={memberUsernameRef} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="create" && 
+                <td>
+                    <FloatingLabel type="text" id="floatingMemberUsername" label="Username" onChange={(e) => setMemberUsername(e.target.value)} />
+                </td>
+            }
 
-            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={props.memberRole} /></td>}
-            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Control type="text" defaultValue={props.memberRole} /></td>}
-            {props.dataDisplay==="MemberList" && rowType==="create" && <td><FloatingLabel controlId="floatingMemberRole" label="Role"><Form.Control type="text" placeholder="Role" /></FloatingLabel></td>}
+            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={memberRole} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Control type="text" defaultValue={memberRole} ref={memberRoleRef} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="create" && 
+                <td>
+                    <FloatingLabel type="text" id="floatingMemberRole" label="Role" onChange={(e) => setMemberRole(e.target.value)} />
+                </td>}
 
-            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={props.memberNotes} /></td>}
-            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Control type="text" defaultValue={props.memberNotes} /></td>}
-            {props.dataDisplay==="MemberList" && rowType==="create" && <td><FloatingLabel controlId="floatingMemberNotes" label="Notes"><Form.Control type="text" placeholder="Notes" /></FloatingLabel></td>}
+            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={memberNotes} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Control type="text" defaultValue={memberNotes} ref={memberNotesRef} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="create" && 
+                <td>
+                    <FloatingLabel type="text" id="floatingMemberNotes" label="Notes" onChange={(e) => setMemberNotes(e.target.value)} />
+                </td>}
 
-            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={props.currentMember ? "Yes" : "No"} /></td>}
-            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Check inline id="edit-current" label="Current" checked={props.currentMember} onChange={console.log("To Do")} /></td>}
-            {props.dataDisplay==="MemberList" && rowType==="create" && <td><Form.Check id="create-current" label="Current" /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={currentMember ? "Yes" : "No"} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Check inline id="edit-current" label="Current" checked={currentMember} onChange={() => setCurrentMember(!currentMember)} ref={currentMemberRef} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="create" && 
+                <td>
+                    <Form.Check id="create-current" label="Current" defaultChecked={currentMember} onChange={() => setCurrentMember(!currentMember)} />
+                </td>}
 
-            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={props.memberAddedDate} /></td>}
-            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Control plaintext readOnly defaultValue={props.memberAddedDate} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={memberAddedDate} /></td>}
+            {props.dataDisplay==="MemberList" && rowType==="edit" && <td><Form.Control plaintext readOnly defaultValue={memberAddedDate} ref={memberAddedDateRef} /></td>}
 
 
-            {props.dataDisplay==="Criteria" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={props.criteriaName} /></td>}
-            {props.dataDisplay==="Criteria" && rowType==="edit" && <td><Form.Control type="text" defaultValue={props.criteriaName} /></td>}
-            {props.dataDisplay==="Criteria" && rowType==="create" && <td><FloatingLabel controlId="floatingCriteriaName" label="Criteria Name"><Form.Control type="text" placeholder="Criteria Name" /></FloatingLabel></td>}
+            {props.dataDisplay==="Criteria" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={criteriaName} /></td>}
+            {props.dataDisplay==="Criteria" && rowType==="edit" && <td><Form.Control type="text" defaultValue={criteriaName} ref={criteriaNameRef} /></td>}
+            {props.dataDisplay==="Criteria" && rowType==="create" && 
+                <td>
+                    <FloatingLabel controlId="floatingCriteriaName" label="Criteria Name"><Form.Control type="text" placeholder="Criteria Name" onChange={(e) => setCriteriaName(e.target.value)} /></FloatingLabel>
+                </td>}
 
-            {props.dataDisplay==="Criteria" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={props.criteriaDatatype} /></td>}
-            {props.dataDisplay==="Criteria" && rowType==="edit" && <td><Form.Control as="select" defaultValue={props.criteriaDatatype}><option>Boolean</option><option>String</option><option>Integer</option><option>Decimal</option><option>Date</option></Form.Control></td>}
-            {props.dataDisplay==="Criteria" && rowType==="create" && <td><Form.Control as="select"><option>Boolean</option><option>String</option><option>Integer</option><option>Decimal</option><option>Date</option></Form.Control></td>}
+            {props.dataDisplay==="Criteria" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={criteriaDatatype} /></td>}
+            {props.dataDisplay==="Criteria" && rowType==="edit" && <td><Form.Control as="select" ref={criteriaDatatypeRef} defaultValue={criteriaDatatype}><option>Boolean</option><option>String</option><option>Number</option><option>Date</option></Form.Control></td>}
+            {props.dataDisplay==="Criteria" && rowType==="create" && 
+                <td>
+                    <Form.Control as="select" onChange={(e) => setCriteriaDatatype(e.target.value)}>
+                        <option>Boolean</option>
+                        <option>String</option>
+                        <option>Number</option>
+                        <option>Date</option>
+                    </Form.Control>
+                </td>}
 
             {rowType==="view" && <td className="text-center"><Button onClick={() => setRowType("edit")}>Edit</Button></td>}
-            {rowType==="edit" && <td colspan="2" className="text-center"><Button onClick={() => setRowType("view")}>Save</Button></td>}
-            {rowType==="view" && <td className="text-center"><Button variant="danger">Delete</Button></td>}
-            {rowType==="create" && <td className="text-center"><Button onClick={() => setRowType("view")}>Add</Button></td>}
-            {rowType==="create" && <td className="text-center"><Button variant="danger" onClick={() => setRowType("view")}>Cancel</Button></td>}
+            {rowType==="edit" && <td className="text-center"><Button type="submit" onClick={handleClickUpdate}>Save</Button></td>}
+            {rowType==="view" && <td className="text-center"><Button type="submit" variant="danger" onClick={handleClickDelete}>Delete</Button></td>}
+            {rowType==="create" && <td className="text-center"><Button type="submit" onClick={handleClickAdd}>Add</Button></td>}
+            {rowType==="create" && <td className="text-center"><Button type="submit" variant="danger" onClick={handleClickCancel}>Cancel</Button></td>}
+            {rowType==="edit" && <td className="text-center"><Button type="submit" variant="danger" onClick={handleClickCancel}>Cancel</Button></td>}
         </tr>
     )
 }
