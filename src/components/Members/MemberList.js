@@ -30,7 +30,7 @@ export default function MemberList(props) {
         };
 
         fetchData();
-    }, [memberDataRow]);
+    }, [memberData, memberDataRow]);
 
     const updateDataHandler = async (updateMemberDataRow) => {
         setMemberDataRow(updateMemberDataRow);

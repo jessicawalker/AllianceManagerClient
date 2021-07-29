@@ -103,13 +103,6 @@ export default function RowTool(props) {
         }
         setRowType("view");
         props.showAdd(false);
-
-        if (dataDisplay==="MemberList"){
-            history.push('/members');
-        }
-        if (dataDisplay==="Criteria"){
-            history.push('/tracking-setup');
-        }
     }
 
     async function handleClickDelete(e) {

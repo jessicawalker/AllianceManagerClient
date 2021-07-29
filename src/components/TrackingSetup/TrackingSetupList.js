@@ -30,7 +30,7 @@ export default function TrackingSetupList(props) {
         };
 
         fetchData();
-    }, [criteriaDataRow]);
+    }, [criteriaData, criteriaDataRow]);
 /*
     const getData = () => {
         axios.get('/trackingcriteria')
@@ -86,8 +86,6 @@ export default function TrackingSetupList(props) {
         // onSubmit, update the form data
         async function handleSubmit(e) {
             e.preventDefault();
-            console.log(criteriaDataRow);
-            console.log(criteriaDataRow.id);
             console.log({
                 criteria_name: criteriaDataRow.criteria_name,
                 criteria_datatype: criteriaDataRow.member_added_date

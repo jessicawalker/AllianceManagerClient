@@ -14,6 +14,8 @@ export default function RowAdd(props) {
         setViewType(boolean);
     };
 
+    
+
     const addDataHandler = async (newDataRow) => {
         if (props.dataDisplay === "MemberList") {
             const enteredMemberUsername = newDataRow.member_username;
@@ -29,7 +31,6 @@ export default function RowAdd(props) {
             })
                 .then(function (response) {
                     console.log(response);
-                    history.push('/members');
                 })
                 .catch(function (error) {
                     console.log(error.response.data);
@@ -45,7 +46,6 @@ export default function RowAdd(props) {
             })
                 .then(function (response) {
                     console.log(response);
-                    history.push('/tracking-setup');
                 })
                 .catch(function (error) {
                     console.log(error.response.data);
