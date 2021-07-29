@@ -21,9 +21,6 @@ export default function RowAdd(props) {
             const enteredMemberNotes = newDataRow.member_notes;
             const enteredCurrentMember = newDataRow.current_member;
 
-            console.log(newDataRow.current_member);
-            console.log(enteredCurrentMember);
-
             await axios.post('/members-add', {
                 member_username: enteredMemberUsername,
                 member_role: enteredMemberRole,
@@ -32,7 +29,7 @@ export default function RowAdd(props) {
             })
                 .then(function (response) {
                     console.log(response);
-                    //history.push('/members');
+                    history.push('/members');
                 })
                 .catch(function (error) {
                     console.log(error.response.data);
@@ -48,7 +45,7 @@ export default function RowAdd(props) {
             })
                 .then(function (response) {
                     console.log(response);
-                    //history.push('/tracking-setup');
+                    history.push('/tracking-setup');
                 })
                 .catch(function (error) {
                     console.log(error.response.data);
@@ -58,7 +55,7 @@ export default function RowAdd(props) {
 
     return (
         <>
-            {viewType && (<Table className="table addRowTool" responsive="md"><tbody><RowTool crudState="create" dataDisplay={sectionType} onSaveData={addDataHandler} showAdd={updateVisibility} currentMember={true} /></tbody></Table>)}
+            {viewType && (<Table className="table addRowTool" responsive="md"><tbody><RowTool crudState="create" dataDisplay={sectionType} onSaveData={addDataHandler} showAdd={updateVisibility} currentMember={true} criteriaDatatype="Boolean" /></tbody></Table>)}
             <div className={styles.addSection}>
                 <Button onClick={() => {
                     setViewType(true);

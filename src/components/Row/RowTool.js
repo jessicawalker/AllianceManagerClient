@@ -54,7 +54,6 @@ export default function RowTool(props) {
                 member_notes: enteredMemberNotes,
                 current_member: currentMember
             };
-            console.log(updateMemberData);
             await props.onUpdateData(updateMemberData);
         }
         if (dataDisplay==="Criteria"){
@@ -80,7 +79,6 @@ export default function RowTool(props) {
         e.preventDefault();
 
         if (dataDisplay==="MemberList"){
-            console.log("Value of currentMember: " + currentMember);
             //if (props.idValue.length > 0)
             //   {} //memberData._id;
 
@@ -90,7 +88,6 @@ export default function RowTool(props) {
                 member_notes: memberNotes,
                 current_member: currentMember
             };
-            console.log("New member data: " + newMemberData.current_member);
             await props.onSaveData(newMemberData);
         }
         if (dataDisplay==="Criteria"){
@@ -102,8 +99,6 @@ export default function RowTool(props) {
                 criteria_name: criteriaName, 
                 criteria_datatype: criteriaDatatype
             };
-            console.log(newCriteriaData.criteria_name);
-            console.log(newCriteriaData.criteria_datatype);
             await props.onSaveData(newCriteriaData);
         }
         setRowType("view");
@@ -177,7 +172,7 @@ export default function RowTool(props) {
             {props.dataDisplay==="Criteria" && rowType==="edit" && <td><Form.Control type="text" defaultValue={criteriaName} ref={criteriaNameRef} /></td>}
             {props.dataDisplay==="Criteria" && rowType==="create" && 
                 <td>
-                    <FloatingLabel controlId="floatingCriteriaName" label="Criteria Name"><Form.Control type="text" placeholder="Criteria Name" onChange={(e) => setCriteriaName(e.target.value)} /></FloatingLabel>
+                    <FloatingLabel type="text" id="floatingCriteriaName" label="Criteria Name" onChange={(e) => setCriteriaName(e.target.value)} />
                 </td>}
 
             {props.dataDisplay==="Criteria" && rowType==="view" && <td><Form.Control plaintext readOnly defaultValue={criteriaDatatype} /></td>}
