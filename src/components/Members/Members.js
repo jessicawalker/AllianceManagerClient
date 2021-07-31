@@ -39,7 +39,10 @@ export default function Members() {
         <div className="navGap">
             <h2 className="text-center mb-4">Members</h2>
             <MemberList crudState="view" />
-            <RowAdd addType="Member" dataDisplay="MemberList" />
+            <RowAdd 
+                addType="Member" 
+                dataDisplay="MemberList" 
+                crudState="view" />
         </div>
     )
 }

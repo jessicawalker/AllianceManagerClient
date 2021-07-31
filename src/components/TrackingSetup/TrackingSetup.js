@@ -10,7 +10,11 @@ export default function TrackingSetup() {
         <div className="navGap">
             <h2 className="text-center mb-4">Tracking Setup</h2>
                 <TrackingSetupList crudState="view" />
-                <RowAdd addType="Tracking Criteria" dataDisplay="Criteria" />
+                <RowAdd 
+                    addType="Tracking Criteria" 
+                    dataDisplay="Criteria"
+                    crudState="view"
+                />
         </div>
     )
 }

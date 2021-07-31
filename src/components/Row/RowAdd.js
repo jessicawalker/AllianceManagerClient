@@ -1,23 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Button, Table } from "react-bootstrap";
 import { useHistory } from 'react-router-dom';
-import { Form, FormCheck, Switch, Button, Table, Card, Alert } from "react-bootstrap";
 import RowTool from '../Row/RowTool';
 import axios from "../../axios";
 import styles from './Row.module.css';
 
 export default function RowAdd(props) {
-    const [viewType, setViewType] = useState(false);
-    const [sectionType, setSectionType] = useState();
+    const [rowType, setRowType] = useState(props.crudState); 
+    const [sectionType, setSectionType] = useState(props.dataDisplay);
     let history = useHistory();
 
-    const updateVisibility = (boolean) => {
-        setViewType(boolean);
-    };
-
-    
-
     const addDataHandler = async (newDataRow) => {
-        if (props.dataDisplay === "MemberList") {
+        setRowType("view");
+        if (sectionType === "MemberList") {
             const enteredMemberUsername = newDataRow.member_username;
             const enteredMemberRole = newDataRow.member_role;
             const enteredMemberNotes = newDataRow.member_notes;
@@ -31,12 +26,13 @@ export default function RowAdd(props) {
             })
                 .then(function (response) {
                     console.log(response);
+                    setRowType("view");
                 })
                 .catch(function (error) {
                     console.log(error.response.data);
                 });
-        }
-        if (props.dataDisplay === "Criteria") {
+        } else
+        if (sectionType === "Criteria") {
             const enteredCriteriaName = newDataRow.criteria_name;
             const enteredCriteriaDatatype = newDataRow.criteria_datatype;
 
@@ -46,6 +42,7 @@ export default function RowAdd(props) {
             })
                 .then(function (response) {
                     console.log(response);
+                    setRowType("view");
                 })
                 .catch(function (error) {
                     console.log(error.response.data);
@@ -53,16 +50,41 @@ export default function RowAdd(props) {
         }
     }
 
+    // Cancel Add
+    async function handleClickCancel(e) {
+        e.preventDefault();
+        if (sectionType==="MemberList"){
+            history.push('/members');
+        } else
+        if (sectionType==="Criteria"){
+            history.push('/tracking-setup');
+        }
+    setRowType("view");
+    }
+
     return (
         <>
-            {viewType && (<Table className="table addRowTool" responsive="md"><tbody><RowTool crudState="create" dataDisplay={sectionType} onSaveData={addDataHandler} showAdd={updateVisibility} currentMember={true} criteriaDatatype="Boolean" /></tbody></Table>)}
-            <div className={styles.addSection}>
-                <Button onClick={() => {
-                    setViewType(true);
-                    setSectionType(props.dataDisplay);
-                }
-                }>Add New {props.addType}</Button>
-            </div>
+            {rowType === "create" && (
+                <Table className="table addRowTool" responsive="md">
+                    <tbody>
+                        <RowTool 
+                            crudState="create" 
+                            dataDisplay={sectionType} 
+                            onSaveData={addDataHandler} 
+                            onCancelData={handleClickCancel} 
+                            currentMember={true} 
+                            criteriaDatatype="Boolean" />
+                    </tbody>
+                </Table>)
+            }
+            {rowType === "view" && (
+                <div className={styles.addSection}>
+                    <Button onClick={() => {
+                        setSectionType(props.dataDisplay);
+                        setRowType("create");
+                        }
+                    }>Add New {props.addType}</Button>
+                </div>)}
         </>
     )
 }
