@@ -1,8 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import TrackingSetupList from './TrackingSetupList';
 import RowAdd from '../Row/RowAdd';
-import { Form, Button, Card, Alert } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
 import axios from "../../axios";
 
 export default function TrackingSetup() {

@@ -4,3 +4,11 @@
     margin: 0 auto;
     max-width: 400px;
 }
+
+.btnStyle {
+    margin: '1em 0 0'
+}
+
+.labelStyle {
+    marginTop: '1em'
+}

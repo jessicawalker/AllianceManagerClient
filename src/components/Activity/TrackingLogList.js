@@ -1,10 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Table, Card, Alert } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import axios from "../../axios";
-import TrackingHead from './TrackingHead';
+//import TrackingHead from './TrackingHead';
 import TrackingCell from './TrackingCell';
-import RowTool from '../Row/RowTool';
+//import RowTool from '../Row/RowTool';
 import styles from './activities.module.css';
 
 export default function TrackingLogList() {
@@ -26,9 +26,6 @@ export default function TrackingLogList() {
     const [headingArray, setHeadingArray] = useState([]);    // tracking criteria list
     let history = useHistory();
 
-    function generateArray(objArray) {
-        return objArray.map(a => a.foo);
-    }
     // read current members
     // change so that the search for current vs all is passed as
     //      params, not set in stone in back-end?
@@ -41,7 +38,6 @@ export default function TrackingLogList() {
         };
 
         fetchData();
-        console.log(activityDate + "Fetched members-current");
     }, []);
 
     // read tracking criteria
@@ -54,7 +50,6 @@ export default function TrackingLogList() {
         };
 
         fetchData();
-        console.log(activityDate + "Fetched trackingcriteria");
         /*for (let x = 0; x < criteriaData.length; x++) {
             headingArray.push(criteriaData[x].criteria_name);
         }*/
@@ -71,7 +66,6 @@ export default function TrackingLogList() {
         };
 
         fetchData();
-        console.log(activityDate + "Fetched userdata");
     }, []);
 
     /*

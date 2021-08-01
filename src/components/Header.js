@@ -33,8 +33,8 @@ export default function Header() {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav">
-                        <li className="nav-item"><Link to="/update-profile" className="nav-link">Add New Activity</Link></li>
-                        <li className="nav-item"><Link to="/update-profile" className="nav-link">Activity Logs</Link></li>
+                        <li className="nav-item"><Link to="/tracking" className="nav-link">Add New Activity</Link></li>
+                        <li className="nav-item"><Link to="/activities" className="nav-link">Activity Logs</Link></li>
                         <li className="nav-item"><Link to="/members" className="nav-link">Members</Link></li>
                         <li className="nav-item"><Link to="/tracking-setup" className="nav-link">Tracking Setup</Link></li>
                         <li className="nav-item"><Link to="/alliance-info" className="nav-link">Alliance Profile</Link></li>

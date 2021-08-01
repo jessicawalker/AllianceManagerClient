@@ -13,6 +13,8 @@ import UpdateProfile from "./components/Auth/UpdateProfile";
 import AllianceInfo from "./components/Auth/AllianceInfo";
 import TrackingSetup from "./components/TrackingSetup/TrackingSetup";
 import Members from "./components/Members/Members";
+import Activities from "./components/Activity/Activities";
+import Tracking from "./components/Activity/Tracking";
 import './styles.css';
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
                             <PrivateRoute path="/alliance-info" component={AllianceInfo} />
                             <PrivateRoute path="/members" component={Members} />
                             <PrivateRoute path="/tracking-setup" component={TrackingSetup} />
+                            <PrivateRoute path="/tracking" component={Tracking} />
+                            <PrivateRoute path="/activities" component={Activities} />
                             <Route path="/signup" component={Signup} />
                             <Route path="/login" component={Login} />
                             <Route path="/forgot-password" component={ForgotPassword} />

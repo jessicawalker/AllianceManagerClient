@@ -14,11 +14,11 @@ export default function DashTool(props) {
     };
 
     return (
-        <>
+        <div>
             <Link to={`${props.goto}`} style={dashLinkStyle}>
                 <img src={`../../imgs/${props.img}.png`} alt={`${props.pageName}`} style={dashImgStyle} />
                 <h4>{props.pageName}</h4>
             </Link>
-        </>
+        </div>
     )
 }

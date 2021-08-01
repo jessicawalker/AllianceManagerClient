@@ -1,39 +1,27 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Table, Form, Button, Card, Alert } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import { Table, Form } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import RowTool from '../Row/RowTool';
 import axios from "../../axios";
 import styles from './Members.module.css'; 
 
-// option 3 for generating list of members (see Members.js for options 1 and 2)
-
-    /*if (props.members.length === 0) {
-        return  (
-            <div>
-                <p>No members</p>
-            </div>
-        )
-    }*/
-
 export default function MemberList(props) {
-    const [memberData, setMemberData] = useState([{}]);
-    const [memberDataRow, setMemberDataRow] = useState({});
+    const [memberData, setMemberData] = useState([{}]);    // brings in all member data
     let history = useHistory();
 
-    // read alliance data
+    // read member data
     useEffect(() => {
         const fetchData = async () => {
-            const result = await axios(
+            let result = await axios(
                 '/members',
             );
             setMemberData(result.data.results);
         };
 
         fetchData();
-    }, [memberData, memberDataRow]);
+    }, [memberData]);
 
     const updateDataHandler = async (updateMemberDataRow) => {
-        setMemberDataRow(updateMemberDataRow);
         const currentId = updateMemberDataRow._id;
         const enteredMemberUsername = updateMemberDataRow.member_username;
         const enteredMemberRole = updateMemberDataRow.member_role;
@@ -78,23 +66,9 @@ export default function MemberList(props) {
     
     };
 
-    
-    // onSubmit, update the form data
     async function handleSubmit(e) {
         e.preventDefault();
-        /*console.log(memberDataRow);
-        console.log(memberDataRow.id);
-        console.log({
-            member_username: memberDataRow.member_username,
-            member_role: memberDataRow.member_role,
-            member_notes: memberDataRow.member_notes,
-            current_member: memberDataRow.current_member,
-            member_added_date: memberDataRow.member_added_date
-        });*/
-
-
     }
-
 
     return (
         <Form onSubmit={handleSubmit}>
@@ -121,11 +95,13 @@ export default function MemberList(props) {
                         crudState="view" 
                         onUpdateData={updateDataHandler}
                         onDeleteData={deleteDataHandler}
+                        showAddRow={false}
                     />
                     ))}
                 </tbody>
                 
             </Table>
+        {memberData.length === 0 && <h3>No members! Would you like to add anyone as an alliance member?</h3>}
         </Form>
     )
 }

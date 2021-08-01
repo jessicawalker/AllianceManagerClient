@@ -1,7 +1,3 @@
-body {
-    background-color: cadetblue;
-}
-
 .dash_img {
     float: left;
     height: 1.4em;
@@ -14,4 +10,9 @@ h4,
 a {
     color: #000;
     text-decoration: none;
+}
+
+.containWidth {
+    margin: 0 auto;
+    max-width: 400px;
 }

@@ -41,13 +41,12 @@ export default function AllianceInfo() {
         const currentId = allianceData._id;
 
         // should there also be a setAlData here?
-        if (enteredAllianceName === "" && enteredGameName === "") {
+        if (enteredAllianceName === "" || enteredGameName === "") {
             return;
         }
         
         if (currentId === "") {  // new entry
             await axios.post('/allianceprofile-add', {
-                _id: currentId,
                 alliance_name: enteredAllianceName,
                 game_name: enteredGameName
             })
@@ -82,11 +81,11 @@ export default function AllianceInfo() {
                         <h2 className="text-center mb-4">Update Alliance</h2>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group id="allianceName">
-                                <Form.Label style={labelStyle}>Alliance Name</Form.Label>
+                                <Form.Label className={styles.labelStyle}>Alliance Name</Form.Label>
                                 <Form.Control type="text" ref={allianceNameRef} required defaultValue={allianceData.alliance_name} />
                             </Form.Group>
                             <Form.Group id="gameName">
-                                <Form.Label style={labelStyle}>Game Name</Form.Label>
+                                <Form.Label className={styles.labelStyle}>Game Name</Form.Label>
                                 <Form.Control type="text" ref={gameNameRef} required defaultValue={allianceData.game_name} />
                             </Form.Group>
                             <Button className="w-100" style={btnStyle} type="submit">
