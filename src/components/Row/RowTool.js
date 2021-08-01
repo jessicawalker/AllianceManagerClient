@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Form, Button, Alert } from "react-bootstrap";
 import FloatingLabel from "react-bootstrap-floating-label";
 import { useHistory } from 'react-router-dom';
+import DeleteModal from '../DeleteModal';
 //import RowCell from './RowCell';
 import styles from './Row.module.css';
 
@@ -16,6 +17,7 @@ export default function RowTool(props) {
     const [criteriaDatatype, setCriteriaDatatype] = useState(props.criteriaDatatype);
     const [entryId, setEntryId] = useState(props.idValue);
     const [dataDisplay, setDataDisplay] = useState(props.dataDisplay);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     let history = useHistory();
 
     // members
@@ -118,15 +120,23 @@ export default function RowTool(props) {
             }
     }
 
-    async function handleClickDelete(e) {
-        e.preventDefault();
-        setRowType("view");
-        await props.onDeleteData(entryId);
+    function handleClickDelete(willDelete) {
+        if (willDelete === true) {
+            props.onDeleteData(entryId);
+        } else {
+            setShowDeleteModal(true); // show delete modal
+        } 
     }
 
     return (
 
         <tr className="align-middle border-top border-bottom">
+        <DeleteModal
+            show={showDeleteModal}
+            animation={false}
+            onHide={() => setShowDeleteModal(false)}
+            onDelete={() => {handleClickDelete(true); setShowDeleteModal(false);}}
+        />
             {props.dataDisplay === "MemberList" && rowType === "view" &&
                 <td>
                     <Form.Control plaintext readOnly defaultValue={memberUsername} />
@@ -231,7 +241,7 @@ export default function RowTool(props) {
 
             {rowType === "view" &&
                 <td className="text-center">
-                    <Button type="submit" variant="danger" onClick={handleClickDelete}>Delete</Button>
+                    <Button variant="danger" onClick={handleClickDelete}>Delete</Button>
                 </td>}
 
             {rowType === "create" &&
@@ -248,6 +258,7 @@ export default function RowTool(props) {
                 <td className="text-center">
                     <Button type="submit" variant="danger" onClick={handleClickCancel}>Cancel</Button>
                 </td>}
+
         </tr>
     )
 }
