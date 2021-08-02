@@ -6,19 +6,6 @@ body {
     width: 4em;
 }
 
-.navbar {
-    margin: 0 auto;
-    max-width: 65em;
-}
-
-.navbar-nav {
-    margin: 0 auto;
-}
-
-.nav-item {
-    padding: 0 0.5em;
-}
-
 .navGap {
     padding-top: 150px;
 }
