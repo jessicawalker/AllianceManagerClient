@@ -10,8 +10,7 @@ export default function Tracking() {
     return (
         <div className="navGap">
             <h2 className="text-center mb-4">Add New Activity Report</h2>
-            <TrackingLogList crudState="view" />
-            <RowAdd addType="Activity Report" dataDisplay="TrackingLogList" />
+            <TrackingLogList />
         </div>
     )
 }
