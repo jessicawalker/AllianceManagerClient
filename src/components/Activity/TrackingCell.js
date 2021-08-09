@@ -13,7 +13,7 @@ export default function TrackingCell(props) {
     const [itemDate, setItemDate] = useState(props.itemDate);
     const [itemUser, setItemUser] = useState(props.itemUser);
     let history = useHistory();
-
+/*
     if (dataType === "Boolean" && trackData === "") {
         setTrackData(false)
     } else
@@ -24,8 +24,8 @@ export default function TrackingCell(props) {
         setTrackData("0")
     } else
     if (dataType === "Date" && trackData === "") {
-        setTrackData(new Date(Date.now()).toLocaleDateString())
-    }
+        setTrackData(new Date(Date.now()).toISOString())
+    }*/
 
     // {fieldName === "date" && <Form.Control plaintext readOnly name={fieldName} defaultValue={new Date(trackData).toLocaleDateString()} />}
 

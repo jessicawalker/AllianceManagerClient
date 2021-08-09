@@ -7,6 +7,7 @@ import TrackingCell from './TrackingCell';
 import TrackingStart from './TrackingStart';
 //import RowTool from '../Row/RowTool';
 import styles from './activities.module.css';
+import TrackingBody from './TrackingBody';
 
 export default function TrackingLogList() {
     // similar to Members and Tracking Criteria, except columns are dynamically created
@@ -19,17 +20,18 @@ export default function TrackingLogList() {
 
     //const activityDate = new Date(Date.now()).toUTCString();
     const [startTracking, setStartTracking] = useState(false);
-    const [activityDate, setActivityDate] = useState();
+    const [activityDate, setActivityDate] = useState(new Date(Date.now()).toISOString());
     //const [membersCurrent, setMembersCurrent] = useState(true);    // current members boolean
     const [memberData, setMemberData] = useState([{}]);    // members list
     const [criteriaData, setCriteriaData] = useState([{}]);    // tracking criteria list
     const [memberActivityData, setActivityData] = useState([{}]);  // master array each user
+    const [memberActivityRow, setActivityRow] = useState({});  // master array each user
     const [memberActivityID, setMemberActivityID] = useState([]);
     const [notesEntry, setNotesEntry] = useState([]);
     let history = useHistory();
 
 
-    
+
     // read tracking criteria
     useEffect(() => {
         const fetchData = async () => {
@@ -42,98 +44,101 @@ export default function TrackingLogList() {
         fetchData();
     }, []);
 
-    // read all current members
+    // update values for master array
     useEffect(() => {
         const fetchData = async () => {
-            let result = await axios(
-                '/members-current',
+            const result = await axios.get(
+                '/userdata-filter', {
+                params: {
+                    date: activityDate
+                }
+            }
             );
-            setMemberData(result.data.members);
+            //console.log(result.data);
+            // bring in data to display that only matches the chosen date
+            setActivityData(result.data.results);
+            //console.log("61 result.data.userdata: " + result.data.userdata);
+            console.log("62 memberActivityData: " + memberActivityData);
         };
 
         fetchData();
-    }, []);
+    }, [activityDate]);
 
-async function handleStartLog(show, activityDate, activityData) {
-    setStartTracking(show);
-    setActivityDate(activityDate)
-    setActivityData(activityData);
 
-    // figure out the one field to update
-    // onBlur, autosave/put update
-    // do a final put at finish button?
-    // date - member - criteria... - notes
+    // bring in data from TrackingStart child component
+    async function handleStartLog(show, activityDate, newActivityData) {
+        // update date for activity, based on TrackingStart selection
+        // doing it this way prevents any capricious updating of the date
+        //      without updating the database
+        setActivityDate(activityDate);
+        setStartTracking(true);
+        //setActivityRow(newActivityData);    // this brings in the newly create data, but could just as easily be an updated useEffect in this component?
+        console.log("70 activityDate: " + activityDate);
+        //console.log("71 newActivityData: " + newActivityData);
+        //console.log("72 memberActivityData: " + memberActivityData);
+        //console.log("73 Object.keys(newActivityData): " + Object.keys(newActivityData));
+        //console.log("74 Object.values(newActivityData): " + Object.values(newActivityData));
 
-}
+        /*const fetchData = async () => {
+            const result = await axios.get(
+                //'/userdata'
+                
+              '/userdata-filter', {
+                  params: {
+                    date: activityDate
+                  }
+                }
+                
+            );
+            //console.log(result.data);
+            console.log("86 result.data.userdata: " + result.data.userdata);
+            setActivityData(result.data.userdata);
+            console.log("88 memberActivityData: " + memberActivityData);
+        };
 
-async function handleSubmit(e) {
-    e.preventDefault();
-}
+        fetchData();*/
+        //console.log("94 memberActivityData: " + memberActivityData);
+        //setActivityData(activityData);
 
-return (
-    <Form onSubmit={handleSubmit} className={styles.formFormat}>
+        // figure out the one field to update
+        // onBlur, autosave/put update
+        // do a final put at finish button?
+        // date - member - criteria... - notes
 
-        <TrackingStart showForm={handleStartLog} />
+    }
 
-        {startTracking &&
-            <Table className="table" striped bordered hover responsive="md">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>User</th>
-                        {criteriaData.map((criteria) => (
-                            <th key={Math.random()}>{criteria.criteria_name}</th>
-                        ))}
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {memberActivityData.map((data) => (
-                        <tr key={Math.random()}>
-                            <TrackingCell
-                                key={Math.random()}
-                                idValue={data._id}
-                                itemDate={activityDate}
-                                itemUser={data.user}
-                                field="date"
-                                value={data.date}
-                                criteria_datatype="Date"
-                            />
-                            <TrackingCell
-                                key={Math.random()}
-                                idValue={data._id}
-                                itemDate={activityDate}
-                                itemUser={data.user}
-                                field="user"
-                                value={data.user}
-                                criteria_datatype="String"
-                            />
+    async function handleSubmit(e) {
+        e.preventDefault();
+    }
 
+    // why these logs render three times upon first arriving
+    // 3rd time, 3rd log comes out as [] rather than [{}]
+    console.log(startTracking);
+    console.log(activityDate);
+    console.log(memberActivityData); // this is coming in perfect
+
+    return (
+        <Form onSubmit={handleSubmit} className={styles.formFormat}>
+
+            <TrackingStart showForm={handleStartLog} />
+
+            {startTracking &&
+                <Table className="table" striped bordered hover responsive="md">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>User</th>
                             {criteriaData.map((criteria) => (
-                                <TrackingCell
-                                    key={Math.random()}
-                                    idValue={data._id}
-                                    itemDate={activityDate}
-                                    itemUser={data.user}
-                                    field={criteria.criteria_key}
-                                    criteria_datatype={criteria.criteria_datatype}
-                                />))}
+                                <th key={Math.random()}>{criteria.criteria_name}</th>
+                            ))}
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <TrackingBody sendData={memberActivityData} sendCriteria={criteriaData} logDate={activityDate} />
 
-                            <TrackingCell
-                                key={Math.random()}
-                                idValue={data._id}
-                                itemDate={activityDate}
-                                itemUser={data.user}
-                                field="notes"
-                                value={notesEntry}
-                                criteria_datatype="String"
-                            />
-                        </tr>))}
-                </tbody>
-            </Table>
-        }
-        {startTracking && <Button type="submit" onClick={handleSubmit}>finish tracking</Button>}
-        {memberActivityData.length === 0 && <h3>Error</h3>}
-    </Form>
-)
+                </Table>
+            }
+            {startTracking && <Button type="submit" onClick={handleSubmit}>finish tracking</Button>}
+        </Form>
+    )
 }
