@@ -30,8 +30,6 @@ export default function TrackingLogList() {
     const [notesEntry, setNotesEntry] = useState([]);
     let history = useHistory();
 
-
-
     // read tracking criteria
     useEffect(() => {
         const fetchData = async () => {
@@ -54,11 +52,8 @@ export default function TrackingLogList() {
                 }
             }
             );
-            //console.log(result.data);
             // bring in data to display that only matches the chosen date
             setActivityData(result.data.results);
-            //console.log("61 result.data.userdata: " + result.data.userdata);
-            console.log("62 memberActivityData: " + memberActivityData);
         };
 
         fetchData();
@@ -66,39 +61,12 @@ export default function TrackingLogList() {
 
 
     // bring in data from TrackingStart child component
-    async function handleStartLog(show, activityDate, newActivityData) {
+    async function handleStartLog(activityDate) {
         // update date for activity, based on TrackingStart selection
         // doing it this way prevents any capricious updating of the date
         //      without updating the database
         setActivityDate(activityDate);
         setStartTracking(true);
-        //setActivityRow(newActivityData);    // this brings in the newly create data, but could just as easily be an updated useEffect in this component?
-        console.log("70 activityDate: " + activityDate);
-        //console.log("71 newActivityData: " + newActivityData);
-        //console.log("72 memberActivityData: " + memberActivityData);
-        //console.log("73 Object.keys(newActivityData): " + Object.keys(newActivityData));
-        //console.log("74 Object.values(newActivityData): " + Object.values(newActivityData));
-
-        /*const fetchData = async () => {
-            const result = await axios.get(
-                //'/userdata'
-                
-              '/userdata-filter', {
-                  params: {
-                    date: activityDate
-                  }
-                }
-                
-            );
-            //console.log(result.data);
-            console.log("86 result.data.userdata: " + result.data.userdata);
-            setActivityData(result.data.userdata);
-            console.log("88 memberActivityData: " + memberActivityData);
-        };
-
-        fetchData();*/
-        //console.log("94 memberActivityData: " + memberActivityData);
-        //setActivityData(activityData);
 
         // figure out the one field to update
         // onBlur, autosave/put update
@@ -110,12 +78,6 @@ export default function TrackingLogList() {
     async function handleSubmit(e) {
         e.preventDefault();
     }
-
-    // why these logs render three times upon first arriving
-    // 3rd time, 3rd log comes out as [] rather than [{}]
-    console.log(startTracking);
-    console.log(activityDate);
-    console.log(memberActivityData); // this is coming in perfect
 
     return (
         <Form onSubmit={handleSubmit} className={styles.formFormat}>
@@ -138,7 +100,10 @@ export default function TrackingLogList() {
 
                 </Table>
             }
-            {startTracking && <Button type="submit" onClick={handleSubmit}>finish tracking</Button>}
+            {startTracking && 
+                <div className={styles.addSection}>
+                    <Button type="submit" onClick={handleSubmit}>Finish Tracking</Button>
+                </div>}
         </Form>
     )
 }

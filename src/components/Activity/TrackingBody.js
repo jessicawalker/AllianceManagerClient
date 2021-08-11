@@ -11,60 +11,12 @@ export default function TrackingBody(props) {
     const [activityDate, setActivityDate] = useState(props.logDate);
     //const [membersCurrent, setMembersCurrent] = useState(true);    // current members boolean
     const [memberData, setMemberData] = useState([{}]);    // members list
-    //const [criteriaData, setCriteriaData] = useState([{}]);    // tracking criteria list 
     const [criteriaData, setCriteriaData] = useState(props.sendCriteria);    // tracking criteria list sendCriteria
     const [memberActivityData, setActivityData] = useState(props.sendData);  // master array each user
-    //const [memberActivityData, setActivityData] = useState([{}]);  // master array each user
     const [memberActivityID, setMemberActivityID] = useState([]);
     const [notesEntry, setNotesEntry] = useState([]);
     let history = useHistory();
     const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
-    //console.log("TrackingBody ln 19 props.sendData: " + props.sendData);
-    console.log("TrackingBody ln 21 memberActivityData: " + JSON.stringify(memberActivityData));
-    console.log("TrackingBody ln 22 props: " + JSON.stringify(props));
-    //console.log("TrackingBody ln 22 memberActivityData: " + memberActivityData);
-    /*console.log("TrackingBody ln 23 props.logDate: " + props.logDate);
-    console.log("TrackingBody ln 24 activityDate: " + activityDate);
-    console.log("TrackingBody ln 25 Object.keys(memberActivityData): " + Object.keys(memberActivityData));
-    console.log("TrackingBody ln 26 Object.values(memberActivityData): " + Object.values(memberActivityData));*/
-
-    // taking out to test if objects show up better from LogList, then pass down
-/*
-        // update values for master array
-        useEffect(() => {
-            const fetchData = async () => {
-                let result = await axios.get(
-                    //'/userdata', {
-                    '/userdata-filter', {
-                    params: { date: activityDate }
-                    }
-                );
-    
-                console.log("3 Array.isArray(result.data.results): " + Array.isArray(result.data.results))
-                console.log("4 Array.isArray(JSON.stringify(result.data.results)): " + Array.isArray(JSON.stringify(result.data.results)))
-                //setActivityData(JSON.stringify(result.data.results));
-                setActivityData(result.data.results);
-                console.log("5 Array.isArray(memberActivityData): " + Array.isArray(memberActivityData))
-
-            };
-            
-            console.log("2 Array.isArray(memberActivityData): " + Array.isArray(memberActivityData))
-    
-            fetchData();
-            console.log("TrackingBody ln 49: " + memberActivityData);
-        }, [activityDate]);
-    //}, [memberActivityData]);*/
-    /*
-    console.log("TrackingBody ln 52 activityDate: " + activityDate);
-    //console.log("TrackingBody ln 47 result.data.results: " + result.data.results);
-    console.log("TrackingBody ln 54 memberActivityData: " + memberActivityData);
-    console.log("TrackingBody ln 55: Object.keys(newActivityData): " + Object.keys(memberActivityData));
-    console.log("TrackingBody ln 56: Object.values(newActivityData): " + Object.values(memberActivityData));
-    console.log("TrackingBody ln 57: Object.keys(newActivityData): " + Object.keys(Object.values(memberActivityData)));*/
-    console.log("1 Array.isArray(memberActivityData): " + Array.isArray(memberActivityData))
-
-    //{Array.isArray(memberActivityData)  && console.log("loop Array.isArray(memberActivityData): " + Array.isArray(memberActivityData)) && memberActivityData.map((data) => (
-        
 
     return (
         <tbody>

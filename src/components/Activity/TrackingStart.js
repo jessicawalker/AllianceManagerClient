@@ -10,8 +10,6 @@ export default function TrackingStart(props) {
     const [activityDate, setActivityDate] = useState(new Date(Date.now()).toISOString());
     const [memberData, setMemberData] = useState([{}]);    // members list
     const [criteriaData, setCriteriaData] = useState([{}]);    // tracking criteria list
-    const [memberActivityData, setActivityData] = useState([{}]);  // master array each user
-    let history = useHistory();
 
     // read all current members
     useEffect(() => {
@@ -37,23 +35,9 @@ export default function TrackingStart(props) {
         fetchData();
     }, []);
 
-    // update values for master array
-    /*useEffect(() => {
-        const fetchData = async () => {
-            const result = await axios.get(
-                '/userdata',
-            );
-            setActivityData(result.data.results);
-            console.log("47 result.data.results: " + result.data.results);  // object Object
-            console.log("48 memberActivityData: " + memberActivityData);  // object Object
-        };
-
-        fetchData();
-    }, [activityDate]);*/
-
     // previous attempt to send to MongoDB the datatypes of fields
     // TODO, if necessary for quality of data tracking and reading
-    const setType = (addMemberEntry, criteria) => {
+    /*const setType = (addMemberEntry, criteria) => {
         if (criteria.criteria_datatype === "Boolean") {
             return addMemberEntry[criteria.criteria_key] = false;
         } else
@@ -68,16 +52,14 @@ export default function TrackingStart(props) {
         } else {
             return addMemberEntry[criteria.criteria_key] = "";
         }
-    }
+    }*/
 
     async function handleStartLog(e) {
         e.preventDefault();
 
         // generate for each member: the same date, criteria, and note fields
         for (let x = 0; x < memberData.length; x++) {
-            //console.log(memberData.length);
             const addMemberEntry = {};
-            //const dateFormatted = new Date(activityDate).toISOString();
             addMemberEntry['date'] = new Date(activityDate).toISOString();
             addMemberEntry['user'] = memberData[x].member_username;
             criteriaData.map((criteria) => (addMemberEntry[criteria.criteria_key] = ""));
@@ -90,17 +72,12 @@ export default function TrackingStart(props) {
             })
                 .then(function (response) {
                 console.log(response);
-                // then, after data posted to DB, run function to send up data
-                // from TrackingStart up to TrackingLogList
-                //props.showForm(true, activityDate, addMemberEntry);
-                //console.log("91 activityDate: " + activityDate);
-                //console.log("92 addMemberEntry: " + addMemberEntry);
             })
                 .catch(function (error) {
                 console.log(error.response.data);
             });
         }
-        props.showForm(true, activityDate);
+        props.showForm(activityDate);
     }
 
     return (

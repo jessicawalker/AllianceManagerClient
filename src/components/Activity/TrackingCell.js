@@ -27,10 +27,7 @@ export default function TrackingCell(props) {
         setTrackData(new Date(Date.now()).toISOString())
     }*/
 
-    // {fieldName === "date" && <Form.Control plaintext readOnly name={fieldName} defaultValue={new Date(trackData).toLocaleDateString()} />}
-
     async function handleUpdateLogField(e) {
-        //e.preventDefault();
 
         await axios.put(`/userdata-update/${idValue}`, {
             fieldName: fieldName,
