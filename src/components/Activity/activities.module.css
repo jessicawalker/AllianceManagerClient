@@ -5,3 +5,11 @@
 table {
     margin-top: 1.8em;
 }
+
+.addSection {
+    text-align: center;
+}
+
+.addSection button {
+    margin: 1em;
+}
