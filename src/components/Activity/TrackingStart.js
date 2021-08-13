@@ -6,10 +6,11 @@ import TrackingCell from './TrackingCell';
 import styles from './activities.module.css';
 
 export default function TrackingStart(props) {
-    const [startTracking, setStartTracking] = useState(false);
+    //const [entryExists, setEntryExists] = useState(props.skipNewEntry);
     const [activityDate, setActivityDate] = useState(new Date(Date.now()).toISOString());
     const [memberData, setMemberData] = useState([{}]);    // members list
     const [criteriaData, setCriteriaData] = useState([{}]);    // tracking criteria list
+    //const [memberActivityData, setActivityData] = useState(props.initialData);  // master array each user
 
     // read all current members
     useEffect(() => {
@@ -66,24 +67,41 @@ export default function TrackingStart(props) {
             //criteriaData.map((criteria) => (setType(addMemberEntry, criteria.criteria_datatype)) );
             addMemberEntry['notes'] = "";
 
-            // add each member row into the userdata database
-            await axios.post('/userdata-add', {
-                addMemberEntry
-            })
-                .then(function (response) {
-                console.log(response);
-            })
-                .catch(function (error) {
-                console.log(error.response.data);
-            });
-        }
-        props.showForm(activityDate);
-    }
+            let compare = false;
 
-    return (
-        <div className={styles.addSection}>
-            <Form.Control type="date" as="input" className="text-center me-auto ms-auto" required  onChange={(e) => setActivityDate(e.target.value)} />
-            <Button type="submit" onClick={handleStartLog}>Set Date and Continue</Button>
-        </div>
-    )
-}
+            for (let y = 0; y < props.initialData.length; y++) {
+                compare = Object.is(addMemberEntry['date'], props.initialData[y].date) && Object.is(addMemberEntry['user'], props.initialData[y].user);
+
+                if (compare === true) break;
+
+                    console.log("Object.is(date): " + Object.is(addMemberEntry['date'], props.initialData[y].date))
+                    console.log("Object.is(user): " + Object.is(addMemberEntry['user'], props.initialData[y].user))
+                    console.log("compare if: " + compare)
+
+            }
+            
+            // get out of outer loop to skip post of duplicate
+            if (compare === true) continue;
+
+                // add each member row into the userdata database
+                await axios.post('/userdata-add', {
+                    addMemberEntry
+                })
+                    .then(function (response) {
+                        console.log(response);
+                    })
+                    .catch(function (error) {
+                        console.log(error.response.data);
+                    });
+                //}
+            }
+            props.showForm(activityDate);
+        }
+
+        return (
+            <div className={styles.addSection}>
+                <Form.Control type="date" as="input" className="text-center me-auto ms-auto" required onChange={(e) => setActivityDate(e.target.value)} />
+                <Button type="submit" onClick={handleStartLog}>Set Date and Continue</Button>
+            </div>
+        )
+    }

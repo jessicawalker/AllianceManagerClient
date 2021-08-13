@@ -21,14 +21,9 @@ export default function TrackingLogList() {
     //const activityDate = new Date(Date.now()).toUTCString();
     const [startTracking, setStartTracking] = useState(false);
     const [activityDate, setActivityDate] = useState(new Date(Date.now()).toISOString());
-    //const [membersCurrent, setMembersCurrent] = useState(true);    // current members boolean
-    const [memberData, setMemberData] = useState([{}]);    // members list
+    const [entryExists, setEntryExists] = useState(false);    // do new entries need to be added?
     const [criteriaData, setCriteriaData] = useState([{}]);    // tracking criteria list
     const [memberActivityData, setActivityData] = useState([{}]);  // master array each user
-    const [memberActivityRow, setActivityRow] = useState({});  // master array each user
-    const [memberActivityID, setMemberActivityID] = useState([]);
-    const [notesEntry, setNotesEntry] = useState([]);
-    let history = useHistory();
 
     // read tracking criteria
     useEffect(() => {
@@ -62,16 +57,12 @@ export default function TrackingLogList() {
 
     // bring in data from TrackingStart child component
     async function handleStartLog(activityDate) {
+
         // update date for activity, based on TrackingStart selection
         // doing it this way prevents any capricious updating of the date
         //      without updating the database
         setActivityDate(activityDate);
         setStartTracking(true);
-
-        // figure out the one field to update
-        // onBlur, autosave/put update
-        // do a final put at finish button?
-        // date - member - criteria... - notes
 
     }
 
@@ -82,14 +73,14 @@ export default function TrackingLogList() {
     return (
         <Form onSubmit={handleSubmit} className={styles.formFormat}>
 
-            <TrackingStart showForm={handleStartLog} />
+            <TrackingStart showForm={handleStartLog} initialData={memberActivityData} />
 
             {startTracking &&
                 <Table className="table" striped bordered hover responsive="md">
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>User</th>
+                            <th>Member</th>
                             {criteriaData.map((criteria) => (
                                 <th key={Math.random()}>{criteria.criteria_name}</th>
                             ))}

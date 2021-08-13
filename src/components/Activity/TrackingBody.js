@@ -1,21 +1,21 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Form, Button, Table, Card, Alert } from "react-bootstrap";
-import { Autosave, useAutosave } from "react-autosave";
+//import { Form, Button, Table, Card, Alert } from "react-bootstrap";
+//import { Autosave, useAutosave } from "react-autosave";
 import axios from "../../axios";
 import { Link, useHistory } from "react-router-dom";
 import TrackingCell from './TrackingCell';
-import styles from './activities.module.css';
+//import styles from './activities.module.css';
 
 export default function TrackingBody(props) {
-    const [startTracking, setStartTracking] = useState(false);
-    const [activityDate, setActivityDate] = useState(props.logDate);
+    //const [startTracking, setStartTracking] = useState(false);
+    //const [activityDate, setActivityDate] = useState(props.logDate);
     //const [membersCurrent, setMembersCurrent] = useState(true);    // current members boolean
-    const [memberData, setMemberData] = useState([{}]);    // members list
+    //const [memberData, setMemberData] = useState([{}]);    // members list
     const [criteriaData, setCriteriaData] = useState(props.sendCriteria);    // tracking criteria list sendCriteria
     const [memberActivityData, setActivityData] = useState(props.sendData);  // master array each user
-    const [memberActivityID, setMemberActivityID] = useState([]);
-    const [notesEntry, setNotesEntry] = useState([]);
-    let history = useHistory();
+    //const [memberActivityID, setMemberActivityID] = useState([]);
+    //const [notesEntry, setNotesEntry] = useState([]);
+    //let history = useHistory();
     const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
 
     return (
