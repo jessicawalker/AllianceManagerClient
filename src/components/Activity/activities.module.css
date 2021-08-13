@@ -13,3 +13,7 @@ table {
 .addSection button {
     margin: 1em;
 }
+
+.secondaryFilter {
+    background-color: powderblue;
+}

@@ -16,8 +16,24 @@ export default function FilterData(props) {
     const [fieldName, setFieldName] = useState(props.field); // key name of field
     const [trackData, setTrackData] = useState(props.value); // value of field
     const [dataType, setDataType] = useState(props.criteria_datatype);
-    const [optionNames, setOptionNames] = useState(props.fieldOptions); // unique values for field
-    const uniqueValues = [];
+    //const [tempArray, setTempArray] = useState(props.arrayValue); // unique values for field
+    //const [uniqueValues, setUniqueValues] = useState([]); // unique values for field
+    const [uniqueDates, setUniqueDates] = useState([]); // unique values for field
+
+    const testArr = ["8/13/2021", "8/03/2021", "8/03/2021", "8/04/2021", "8/06/2021", "8/06/2021", "8/07/2021", "8/03/2021", "8/08/2021", "8/08/2021", "8/08/2021", "8/08/2021"];
+    // dataValueArray.sort((a, b) => (a.display.toLowerCase() > b.display.toLowerCase()) ? 1 : -1);
+    //let uniqueValues = testArr.filter((date, i, uv) => uv.indexOf(date) === i);
+    //console.log("var: " + uniqueValues);
+    
+    //(fullObj, objValue) => { fullObj.map((option) => ({objValue})};
+    //const getUniqueValuesTest = (object) => Object.values(object).filter((date, i, uv) => uv.indexOf(date) === i);
+
+    const getUniqueValues = (fullArr) => fullArr.filter((date, i, uv) => uv.indexOf(date) === i);
+    const sortValues = (uniqueArr) => getUniqueValues(uniqueArr).sort((a, b) => (a > b) ? 1 : -1);
+    //console.log("fnc 1: " + getUniqueValuesTest(uniqueValues).sort((a, b) => (a > b) ? 1 : -1))
+    //console.log("fnc 1: " + getUniqueValuesTest(uniqueValues))
+    //console.log("fnc 2: " + sortValues(testArr))
+    //const sortValues = dataValueArray.sort((a, b) => (a > b) ? 1 : -1);
     
     // read current member data
     useEffect(() => {
@@ -42,6 +58,49 @@ export default function FilterData(props) {
 
         fetchData();
     }, []);
+
+    // read all member data
+    useEffect(() => {
+        const fetchData = async () => {
+            let result = await axios.get('/userdata-unique', {
+                params: {unique: "date"}});
+                setUniqueDates(result.data.results);
+        };
+
+        fetchData();
+    }, []);
+/*
+    const getUniqueValuesTest = async (field) => {
+        try {
+          let result = await axios.get('/userdata-unique', {
+            params: {unique: field}});
+          setUniqueValues(result.data.results);
+          return result.data.results;
+        } catch (error) {
+          console.error(error);
+        }
+        return;
+      }*/
+
+    /*
+    const getUniqueValues = async (field) => {
+        await axios.get('/userdata-unique', {
+            params: {unique: field, }})
+            .then(function (response) {
+                console.log(response);
+                setUniqueValues(response.data.results);
+                return;
+            })
+            .catch(function (error) {
+                console.log(error.response.data);
+                return;
+            });
+    };*/
+
+    //const test1 = sortValues(memberDataCurrent);
+    //const test2 = sortValues(memberDataAll);
+    //console.log(test1);
+    //console.log(test2);
     /*
 
     userdata.user => 
@@ -76,37 +135,18 @@ export default function FilterData(props) {
 
 
     */
-
-    
-function getUniqueValues(allDataArray) {
-    var valueExists;
-    var valueList = "";
-
-    var dataValueArray = [{ value: "", display: "- All Users -" }];
-    for (let i = 0; i < allDataArray.length; i++) {
-        valueExists = dataValueArray.find(function(element) {
-            return element.value === allDataArray[i].user;
-        });
-
-        if (valueExists) {
-            continue;
-        } else {
-            dataValueArray.push({ value: allDataArray[i].user, display: allDataArray[i].user });
-            valueList += allDataArray[i].user + " ";
-        }
-    }
-    dataValueArray.sort((a, b) => (a.display.toLowerCase() > b.display.toLowerCase()) ? 1 : -1);
-    return dataValueArray;
-}
     
     return (
-        <Col>
+        <>
             <Form.Label>{fieldLabel}: </Form.Label>
             <Form.Control className="mb-2 mr-sm-2" size="sm" as="select" name={fieldName} onChange={(e) => setTrackData(e.target.value)}>
                 <option>all</option>
                 {dataType==="Boolean" && <option>true</option>}
                 {dataType==="Boolean" && <option>false</option>}
                 
+                {fieldName==="date" && uniqueDates.forEach((item) => 
+                    <option key={Math.random()}>{item}</option>
+                )} 
                 {showCurrentMembers && fieldName==="user" && memberDataCurrent.map((option) => (
                     <option key={Math.random()}>{option.member_username}</option>
                 ))} 
@@ -116,13 +156,13 @@ function getUniqueValues(allDataArray) {
             </Form.Control>
             {fieldName==="user" && 
                 <Form.Check 
-                type="checkbox"
-                id="members_check"
-                label="Current Members Only"
-                checked={showCurrentMembers}
-                onChange={(e) => setShowCurrentMembers(!showCurrentMembers)}
-            />
+                    type="checkbox"
+                    id="members_check"
+                    label="Current Members Only"
+                    checked={showCurrentMembers}
+                    onChange={(e) => setShowCurrentMembers(!showCurrentMembers)}
+                />
     }
-        </Col>
+        </>
     )
 }

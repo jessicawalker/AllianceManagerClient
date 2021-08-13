@@ -76,43 +76,48 @@ export default function Activities() {
                     /></Col>
                 </Form.Row>
                 
-        <Form.Group>
-                    {criteriaData.map((criteria) => (
-                        <FilterData 
-                            filterName={criteria.criteria_name} 
-                            field={criteria.criteria_key} 
-                            criteria_datatype={criteria.criteria_datatype}
-                        />
-                    ))}
-        </Form.Group>
+                <Form.Group className={styles.secondaryFilter}>
+                    <Form.Row>
+                        {criteriaData.map((criteria) => (
+                            <FilterData 
+                                filterName={criteria.criteria_name} 
+                                field={criteria.criteria_key} 
+                                criteria_datatype={criteria.criteria_datatype}
+                            />
+                        ))}
+                    </Form.Row>
+                </Form.Group>
+
                 <Form.Row>
-                    
-        <Col>
-            <Pagination>
-  <Pagination.First onClick={(e) => setPaginationPage(1)} />
-  <Pagination.Prev onClick={(e) => setPaginationPage(paginationPage - 1)} />
-  <Pagination.Item>{1}</Pagination.Item>
-  <Pagination.Ellipsis />
+                    <Col>
+                        <Pagination>
+                            <Pagination.First onClick={(e) => setPaginationPage(1)} />
+                            <Pagination.Prev onClick={(e) => setPaginationPage(paginationPage - 1)} />
+                            <Pagination.Item>{1}</Pagination.Item>
+                            <Pagination.Ellipsis />
 
-  <Pagination.Item onClick={(e) => setPaginationPage(4)}>{4}</Pagination.Item>
-  <Pagination.Item>{5}</Pagination.Item>
-  <Pagination.Item active>{12}</Pagination.Item>
-  <Pagination.Item>{13}</Pagination.Item>
-  <Pagination.Item disabled>{14}</Pagination.Item>
+                            <Pagination.Item onClick={(e) => setPaginationPage(4)}>{4}</Pagination.Item>
+                            <Pagination.Item>{5}</Pagination.Item>
+                            <Pagination.Item active>{12}</Pagination.Item>
+                            <Pagination.Item>{13}</Pagination.Item>
+                            <Pagination.Item disabled>{14}</Pagination.Item>
 
-  <Pagination.Ellipsis />
-  <Pagination.Item>{20}</Pagination.Item>
-  <Pagination.Next onClick={(e) => setPaginationPage(paginationPage + 1)} />
-  <Pagination.Last />
-</Pagination></Col>
-        <Col xs lg="2">
-<Form.Control className="mb-2 mr-sm-2" as="select" name="paginationOptions" onChange={(e) => setPaginationLimit(e.target.value)}>
-<option>20</option>
-<option>50</option>
-<option>100</option>
-<option>200</option>
-<option value="">Show All</option>
-</Form.Control></Col></Form.Row>
+                            <Pagination.Ellipsis />
+                            <Pagination.Item>{20}</Pagination.Item>
+                            <Pagination.Next onClick={(e) => setPaginationPage(paginationPage + 1)} />
+                            <Pagination.Last />
+                        </Pagination>
+                    </Col>
+                    <Col xs lg="2">
+                        <Form.Control className="mb-2 mr-sm-2" as="select" name="paginationOptions" onChange={(e) => setPaginationLimit(e.target.value)}>
+                            <option>20</option>
+                            <option>50</option>
+                            <option>100</option>
+                            <option>200</option>
+                            <option value="">Show All</option>
+                        </Form.Control>
+                    </Col>
+                </Form.Row>
             </Form>
 
             <Table className="table" striped bordered hover responsive="md">
@@ -155,6 +160,7 @@ export default function Activities() {
                                 itemDate={data.date}
                                 itemUser={data.user}
                                 field={criteria.criteria_key}
+                                value={`{data.${criteria.criteria_key}}`}
                                 criteria_datatype={criteria.criteria_datatype}
                             />))}
 
