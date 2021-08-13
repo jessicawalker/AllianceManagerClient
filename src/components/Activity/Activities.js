@@ -160,7 +160,7 @@ export default function Activities() {
                                 itemDate={data.date}
                                 itemUser={data.user}
                                 field={criteria.criteria_key}
-                                value={`{data.${criteria.criteria_key}}`}
+                                value={data[criteria.criteria_key]}
                                 criteria_datatype={criteria.criteria_datatype}
                             />))}
 
