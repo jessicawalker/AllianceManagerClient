@@ -31,19 +31,23 @@ export default function TrackingStart(props) {
             const addMemberEntry = {};
             addMemberEntry['date'] = new Date(activityDate).toISOString();
             addMemberEntry['user'] = memberData[x].member_username;
+            //props.criteriaData.map((criteria) => (addMemberEntry[criteria.criteria_key] = ""));
             
-            criteriaData.map(criteria => {
+            props.criteriaData.map((criteria) => {
+                let defaultValue;
                 if (criteria.criteria_datatype === "Boolean"){
-                    return addMemberEntry[criteria.criteria_key] = false;
+                    defaultValue = false;
                 } else if (criteria.criteria_datatype === "Number") {
-                    return addMemberEntry[criteria.criteria_key] = 0;
+                    defaultValue = 0;
                 } else if (criteria.criteria_datatype === "Date") {
-                    return addMemberEntry[criteria.criteria_key] = new Date(activityDate).toISOString();
+                    defaultValue = new Date(activityDate).toISOString();
                 } else {
-                    return addMemberEntry[criteria.criteria_key] = "";
+                    defaultValue = "";
                 }
-            });
-            //criteriaData.map((criteria) => (addMemberEntry[criteria.criteria_key] = ""));
+                addMemberEntry[criteria.criteria_key] = defaultValue;
+            }
+            );
+
             addMemberEntry['notes'] = "";
 
             let compare = false;
