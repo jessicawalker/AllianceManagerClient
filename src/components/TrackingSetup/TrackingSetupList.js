@@ -3,6 +3,7 @@ import { Table, Form } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import RowTool from '../Row/RowTool';
 import axios from "../../axios";
+import { v4 as uuidv4 } from 'uuid';
 import styles from './TrackingSetup.module.css';
 
 
@@ -96,7 +97,7 @@ export default function TrackingSetupList(props) {
                 </tr>
             </thead>
             <tbody>
-                {criteriaData.map((criteria) => (<RowTool key={criteria._id}
+                {criteriaData.map((criteria) => (<RowTool key={uuidv4()}
                     idValue={criteria._id}
                     dataDisplay="Criteria"
                     criteriaName={criteria.criteria_name}

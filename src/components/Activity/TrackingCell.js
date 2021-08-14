@@ -10,22 +10,6 @@ export default function TrackingCell(props) {
     const [fieldName, setFieldName] = useState(props.field);
     const [dataType, setDataType] = useState(props.criteria_datatype);
     const [idValue, setIdValue] = useState(props.idValue);
-    //const [itemDate, setItemDate] = useState(props.itemDate);
-    //const [itemUser, setItemUser] = useState(props.itemUser);
-    let history = useHistory();
-/*
-    if (dataType === "Boolean" && trackData === "") {
-        setTrackData(false)
-    } else
-    if (dataType === "String" && trackData === "") {
-        setTrackData("")
-    } else
-    if (dataType === "Number" && trackData === "") {
-        setTrackData("0")
-    } else
-    if (dataType === "Date" && trackData === "") {
-        setTrackData(new Date(Date.now()).toISOString())
-    }*/
 
     async function handleUpdateLogField(e) {
 
@@ -40,7 +24,7 @@ export default function TrackingCell(props) {
                 console.log(error.response.data);
             });
     
-        // do a final put at finish button? or just some other final thing?
+        // do a final put at finish button? or just some other final thing? go to view version?
     
     }
 
@@ -48,14 +32,20 @@ export default function TrackingCell(props) {
     return (
         <td>
             {fieldName === "date" && <Form.Control plaintext readOnly name={fieldName} value={trackData} onChange={(e) => setTrackData(e.target.value)} />}
+
             {fieldName === "user" && <Form.Control plaintext readOnly name={fieldName} value={trackData} onChange={(e) => setTrackData(e.target.value)} />}
+
                 {fieldName !== "user" && fieldName !== "notes" && dataType === "String" && <Form.Control type="text" name={fieldName} value={trackData} onChange={(e) => setTrackData(e.target.value)} />}
+
                 {dataType === "Number" && <Form.Control type="number" name={fieldName} value={trackData} onChange={(e) => setTrackData(e.target.value)} />}
+
                 {dataType === "Boolean" && <Form.Control as="select" name={fieldName} value={trackData} onChange={(e) => setTrackData(e.target.value)}>
-                    <option>false</option>
-                    <option>true</option>
+                    <option value={false}>false</option>
+                    <option value={true}>true</option>
                 </Form.Control>}
+                
                 {fieldName !== "date" && dataType === "Date" && <Form.Control type="date" name={fieldName} value={trackData} onChange={(e) => setTrackData(e.target.value)} />}
+
             {fieldName === "notes" && <Form.Control type="text" name={fieldName} value={trackData} onChange={(e) => setTrackData(e.target.value)} />}
             <Autosave data={trackData} onSave={handleUpdateLogField} />
         </td>

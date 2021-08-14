@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Form } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
 import RowTool from '../Row/RowTool';
 import axios from "../../axios";
+import { v4 as uuidv4 } from 'uuid';
 import styles from './Members.module.css'; 
 
 export default function MemberList(props) {
-    const [memberData, setMemberData] = useState([{}]);    // brings in all member data
-    let history = useHistory();
+    const [memberData, setMemberData] = useState([{}]);    // collects all member data
 
     // read member data
     useEffect(() => {
@@ -19,7 +18,9 @@ export default function MemberList(props) {
         };
 
         fetchData();
-    }, [memberData]);
+
+        return () => {console.log("fetched")}
+    }, []);
 
     const updateDataHandler = async (updateMemberDataRow) => {
         const currentId = updateMemberDataRow._id;
@@ -27,7 +28,6 @@ export default function MemberList(props) {
         const enteredMemberRole = updateMemberDataRow.member_role;
         const enteredMemberNotes = updateMemberDataRow.member_notes;
         const enteredCurrentMember = updateMemberDataRow.current_member;
-        //const enteredMemberAddedDate = memberDataRow.member_added_date;
 
             await axios.put(`/members-update/${currentId}`, {
                 member_username: enteredMemberUsername,
@@ -40,7 +40,15 @@ export default function MemberList(props) {
             })
                 .then(function (response) {
                     console.log(response);
-                    history.push('/members');
+                    //history.push('/members');
+                    const fetchData = async () => {
+                        const result = await axios(
+                            '/members',
+                        );
+                        setMemberData(result.data.results);
+                    };
+            
+                    fetchData();
                 })
                 .catch(function (error) {
                     console.log(error.response.data);
@@ -84,7 +92,7 @@ export default function MemberList(props) {
                     </tr>
                 </thead>
                 <tbody>
-                {memberData.map((member) => (<RowTool key={member._id}  
+                {memberData.map((member) => (<RowTool key={uuidv4()}  
                         idValue={member._id}
                         dataDisplay="MemberList" 
                         username={member.member_username} 

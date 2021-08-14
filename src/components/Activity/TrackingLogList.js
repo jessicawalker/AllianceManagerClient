@@ -6,6 +6,7 @@ import axios from "../../axios";
 import TrackingCell from './TrackingCell';
 import TrackingStart from './TrackingStart';
 //import RowTool from '../Row/RowTool';
+import { v4 as uuidv4 } from 'uuid';
 import styles from './activities.module.css';
 import TrackingBody from './TrackingBody';
 
@@ -40,6 +41,7 @@ export default function TrackingLogList() {
     // update values for master array
     useEffect(() => {
         const fetchData = async () => {
+            console.log(activityDate);
             const result = await axios.get(
                 '/userdata-filter', {
                 params: {
@@ -68,12 +70,14 @@ export default function TrackingLogList() {
 
     async function handleSubmit(e) {
         e.preventDefault();
+
+        // go to activities page with that date
     }
 
     return (
         <Form onSubmit={handleSubmit} className={styles.formFormat}>
 
-            <TrackingStart showForm={handleStartLog} initialData={memberActivityData} />
+            <TrackingStart showForm={handleStartLog} initialData={memberActivityData} criteriaData={criteriaData} />
 
             {startTracking &&
                 <Table className="table" striped bordered hover responsive="md">
@@ -82,7 +86,7 @@ export default function TrackingLogList() {
                             <th>Date</th>
                             <th>Member</th>
                             {criteriaData.map((criteria) => (
-                                <th key={Math.random()}>{criteria.criteria_name}</th>
+                                <th key={uuidv4()}>{criteria.criteria_name}</th>
                             ))}
                             <th>Notes</th>
                         </tr>

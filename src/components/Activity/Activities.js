@@ -6,6 +6,7 @@ import { useHistory } from "react-router-dom";
 import axios from "../../axios";
 import TrackingCellView from "./TrackingCellView";
 import FilterData from './FilterData';
+import { v4 as uuidv4 } from 'uuid';
 import styles from './activities.module.css';
 
 export default function Activities() {
@@ -14,8 +15,7 @@ export default function Activities() {
     const [memberActivityData, setActivityData] = useState([{}]);  // master array each user
     const [paginationPage, setPaginationPage] = useState(1);  // master array each user
     const [paginationLimit, setPaginationLimit] = useState(20);  // master array each user
-    const [searchParams, setSearchParams] = useState({page: paginationPage,
-        limit: paginationLimit,});  // master array each user
+    const [searchParams, setSearchParams] = useState([]);  // master array each user
     const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
     
     // read member data
@@ -47,16 +47,38 @@ export default function Activities() {
         const fetchData = async () => {
             const result = await axios.get(
                 '/userdata', {
-                    params: {page: paginationPage, limit: paginationLimit,}
-                    //params: searchParams
+                    params: {page: paginationPage, limit: paginationLimit}
+                    //params: {page: paginationPage, limit: paginationLimit, filter: searchParams}
+                    //params: {page: paginationPage, limit: paginationLimit, [searchParams]}
                   }
             );
             setActivityData(result.data.results);
         };
 
         fetchData();
-    //}, [searchParams, paginationPage, paginationLimit]);
-    }, [paginationPage, paginationLimit]);
+    }, [searchParams, paginationPage, paginationLimit]);
+    //}, [paginationPage, paginationLimit]);
+            // search.append(searchDate)
+        // search.append(searchUser)
+        // search.append(filter)   ===> [{claimedSSWar: true},  { activeDeclare: false }]
+
+    async function getSearchParams(newParams) {
+        // {fieldName: trackData}
+        //const testParams = Object.create(newParams);
+
+        // setSearchParams = ...prevParams + param
+        console.log({newParams});   // {newParams: "{offense: }"}
+        console.log(newParams);     // {offense: }
+        setSearchParams(prevParams => {
+            console.log(prevParams);
+            return [...prevParams, newParams];
+            //return [...prevParams, testParams];
+            // return {claim SS: true}, {offense: true}
+            // {claim SS: true} then add---
+            // {claim SS: true, offense: true}
+        })
+    }
+    
     return (
         <div className="navGap">
             <Form inline>
@@ -66,6 +88,7 @@ export default function Activities() {
                         filterName="Date" 
                         field="date" 
                         criteria_datatype="Date"
+                        filterValues={getSearchParams}
                     />
                     </Col>
                 <Col xs={4}>
@@ -73,6 +96,7 @@ export default function Activities() {
                         filterName="Member" 
                         field="user" 
                         criteria_datatype="String"
+                        filterValues={getSearchParams}
                     /></Col>
                 </Form.Row>
                 
@@ -80,9 +104,12 @@ export default function Activities() {
                     <Form.Row>
                         {criteriaData.map((criteria) => (
                             <FilterData 
+                                key={criteria._id}
+                                idValue={criteria._id}
                                 filterName={criteria.criteria_name} 
                                 field={criteria.criteria_key} 
                                 criteria_datatype={criteria.criteria_datatype}
+                                filterValues={getSearchParams}
                             />
                         ))}
                     </Form.Row>

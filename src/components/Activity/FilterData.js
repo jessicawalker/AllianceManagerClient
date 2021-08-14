@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import { useHistory } from "react-router-dom";
 import axios from "../../axios";
 import TrackingCellView from "./TrackingCellView";
+import { v4 as uuidv4 } from 'uuid';
 import styles from './activities.module.css';
 
 export default function FilterData(props) {
@@ -15,7 +16,9 @@ export default function FilterData(props) {
     const [fieldName, setFieldName] = useState(props.field); // key name of field
     const [dataType, setDataType] = useState(props.criteria_datatype); // datatype of field
     const [trackData, setTrackData] = useState(props.value); // value of field
+    const [filterData, setFilterData] = useState({}); // value of chosen filters
     const [uniqueValues, setUniqueValues] = useState([]); // unique values for field
+    let history = useHistory();
 
     
     // read current member data
@@ -28,7 +31,38 @@ export default function FilterData(props) {
         };
 
         fetchData();
+        return () => {
+            history.push('/activities');
+            console.log("unsub");
+        };
     }, []);
+/*
+    // read all member data
+    useEffect(() => {
+        const CancelToken = axios.CancelToken;
+        const source = CancelToken.source();
+        const fetchData = async () => {
+            try {
+                let result = await axios(
+                    '/members-all', {
+                        cancelToken: source.token,
+                    }
+                );
+                setMemberDataAll(result.data.members);
+            } catch (error) {
+                if (axios.isCancel(error)) {
+                } else {
+                    throw error
+                }
+            }
+        }
+    
+        fetchData()
+    
+        return () => {
+            source.cancel()
+        }
+    }, [])*/
 
     // read all member data
     useEffect(() => {
@@ -40,9 +74,13 @@ export default function FilterData(props) {
         };
 
         fetchData();
+        return () => {
+            history.push('/activities');
+            console.log("unsub");
+        };
     }, []);
 
-    // read all member data, filter for field's unique values
+    // read all user data, filter for field's unique values
     useEffect(() => {
         const fetchData = async () => {
             await axios.get('/userdata-unique', {
@@ -52,33 +90,56 @@ export default function FilterData(props) {
                 setUniqueValues(response.data.results);
             })
             .catch(function (error) {
-                //console.log(error.response.data);
+                console.log(error);
             });
         };
 
         fetchData();
+        return () => {
+            history.push('/activities');
+            console.log("unsub");
+        };
+    //}, []);
     }, [fieldName]);
 
-    const selectItems = fieldName !=="user" && uniqueValues.sort((a, b) => (a > b) ? -1 : 1).map(
+
+    const memberCurrentItems = memberDataCurrent.map((option) => (
+        <option key={uuidv4()}>{option.member_username}</option>
+    ))
+
+    const memberAllItems = memberDataAll.map((option) => (
+        <option key={uuidv4()}>{option.member_username}</option>
+    ))
+
+    // generate alphabetized list of options per field
+    const selectItems = fieldName !==undefined && fieldName !=="user" && uniqueValues.sort((a, b) => (a > b) ? -1 : 1).map(
         (item) =>
-            <option>
+            <option key={uuidv4()}>
                 {dataType !== "Date" && item}
                 {dataType === "Date" && new Date(item).toDateString()}
             </option>
     );
+    
+    async function handleFilter(e) {
+        //e.preventDefault();
 
-    const memberCurrentItems = memberDataCurrent.map((option) => (
-        <option key={Math.random()}>{option.member_username}</option>
-    ))
+        setTrackData(e.target.value);
+        //filterData, setFilterData
+        //setFilterData(prevFilterData => {});
 
-    const memberAllItems = memberDataAll.map((option) => (
-        <option key={Math.random()}>{option.member_username}</option>
-    ))
+        // send {fieldName: trackData}
+        props.filterValues(`{${fieldName}: ${trackData}}`);
+        //props.filterValues(fieldName, trackData);
+
+        // send up filter values, to combine with other filters for pagination
+    }
+
+
     
     return (
         <>
             <Form.Label>{fieldLabel}: </Form.Label>
-            <Form.Control className="mb-2 mr-sm-2" size="sm" as="select" name={fieldName} onChange={(e) => setTrackData(e.target.value)}>
+            <Form.Control className="mb-2 mr-sm-2" size="sm" as="select" name={fieldName} onChange={(e) => handleFilter(e)}>
 
                 <option>all</option>
 
@@ -88,6 +149,7 @@ export default function FilterData(props) {
                 {!showCurrentMembers && fieldName==="user" && memberAllItems} 
 
             </Form.Control>
+
             {fieldName==="user" && 
                 <Form.Check 
                     type="checkbox"

@@ -9,8 +9,7 @@ export default function TrackingStart(props) {
     //const [entryExists, setEntryExists] = useState(props.skipNewEntry);
     const [activityDate, setActivityDate] = useState(new Date(Date.now()).toISOString());
     const [memberData, setMemberData] = useState([{}]);    // members list
-    const [criteriaData, setCriteriaData] = useState([{}]);    // tracking criteria list
-    //const [memberActivityData, setActivityData] = useState(props.initialData);  // master array each user
+    const [criteriaData, setCriteriaData] = useState(props.criteriaData);    // tracking criteria list
 
     // read all current members
     useEffect(() => {
@@ -24,37 +23,6 @@ export default function TrackingStart(props) {
         fetchData();
     }, []);
 
-    // read tracking criteria
-    useEffect(() => {
-        const fetchData = async () => {
-            const result = await axios.get(
-                '/trackingcriteria',
-            );
-            setCriteriaData(result.data.results);
-        };
-
-        fetchData();
-    }, []);
-
-    // previous attempt to send to MongoDB the datatypes of fields
-    // TODO, if necessary for quality of data tracking and reading
-    /*const setType = (addMemberEntry, criteria) => {
-        if (criteria.criteria_datatype === "Boolean") {
-            return addMemberEntry[criteria.criteria_key] = false;
-        } else
-        if (criteria.criteria_datatype === "Number") {
-            return addMemberEntry[criteria.criteria_key] = 0;
-        } else
-        if (criteria.criteria_datatype === "Date") {
-            return addMemberEntry[criteria.criteria_key] = new Date(Date.now()).toISOString();
-        } else
-        if (criteria.criteria_datatype === "String") {
-            return addMemberEntry[criteria.criteria_key] = "";
-        } else {
-            return addMemberEntry[criteria.criteria_key] = "";
-        }
-    }*/
-
     async function handleStartLog(e) {
         e.preventDefault();
 
@@ -63,8 +31,19 @@ export default function TrackingStart(props) {
             const addMemberEntry = {};
             addMemberEntry['date'] = new Date(activityDate).toISOString();
             addMemberEntry['user'] = memberData[x].member_username;
-            criteriaData.map((criteria) => (addMemberEntry[criteria.criteria_key] = ""));
-            //criteriaData.map((criteria) => (setType(addMemberEntry, criteria.criteria_datatype)) );
+            
+            criteriaData.map(criteria => {
+                if (criteria.criteria_datatype === "Boolean"){
+                    return addMemberEntry[criteria.criteria_key] = false;
+                } else if (criteria.criteria_datatype === "Number") {
+                    return addMemberEntry[criteria.criteria_key] = 0;
+                } else if (criteria.criteria_datatype === "Date") {
+                    return addMemberEntry[criteria.criteria_key] = new Date(activityDate).toISOString();
+                } else {
+                    return addMemberEntry[criteria.criteria_key] = "";
+                }
+            });
+            //criteriaData.map((criteria) => (addMemberEntry[criteria.criteria_key] = ""));
             addMemberEntry['notes'] = "";
 
             let compare = false;
@@ -74,9 +53,20 @@ export default function TrackingStart(props) {
 
                 if (compare === true) break;
 
-                    console.log("Object.is(date): " + Object.is(addMemberEntry['date'], props.initialData[y].date))
-                    console.log("Object.is(user): " + Object.is(addMemberEntry['user'], props.initialData[y].user))
-                    console.log("compare if: " + compare)
+                // using props isn't working for this
+                // it's comparing to the previous date, not all dates read
+
+                console.log(addMemberEntry['date']);
+                console.log(props.initialData[y].date);
+
+                console.log("Objects.value(addMemberEntry['date']: " + 
+                    Object.values(addMemberEntry['date']));
+                console.log("Object.values(props.initialData[y].date) " + 
+                    Object.values(props.initialData[y].date));
+
+                console.log("Object.is(date): " + Object.is(addMemberEntry['date'], props.initialData[y].date))
+                console.log("Object.is(user): " + Object.is(addMemberEntry['user'], props.initialData[y].user))
+                console.log("compare if: " + compare)
 
             }
             

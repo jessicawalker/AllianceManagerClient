@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import axios from "../../axios";
 import { Link, useHistory } from "react-router-dom";
 import TrackingCell from './TrackingCell';
+import { v4 as uuidv4 } from 'uuid';
 //import styles from './activities.module.css';
 
 export default function TrackingBody(props) {
@@ -23,7 +24,7 @@ export default function TrackingBody(props) {
         {props.sendData.map((data) => (
             <tr key={Math.random()}>
                 <TrackingCell
-                    key={Math.random()}
+                    key={uuidv4()}
                     idValue={data._id}
                     itemDate={data.date}
                     itemUser={data.user}
@@ -32,7 +33,7 @@ export default function TrackingBody(props) {
                     criteria_datatype="Date"
                 />
                 <TrackingCell
-                    key={Math.random()}
+                    key={uuidv4()}
                     idValue={data._id}
                     itemDate={data.date}
                     itemUser={data.user}
@@ -43,7 +44,7 @@ export default function TrackingBody(props) {
 
                 {criteriaData.map((criteria) => (
                     <TrackingCell
-                        key={Math.random()}
+                    key={uuidv4()}
                         idValue={data._id}
                         itemDate={data.date}
                         itemUser={data.user}
