@@ -1,10 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { Form, Button, Card, Alert } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import FloatingLabel from "react-bootstrap-floating-label";
-import { useHistory } from 'react-router-dom';
-import RowCellCreate from './RowCellCreate';
-import RowCellEdit from './RowCellEdit';
-import RowCellView from './RowCellView';
 import styles from './Row.module.css'; 
 
 export default function RowCell(props) {
@@ -26,28 +22,9 @@ export default function RowCell(props) {
     // current
     const criteriaNameRef = useRef();
     const criteriaDatatypeRef = useRef();
-    /*
-            <RowCellView dataDisplay="MemberList" field="memberUsername" />
-            <RowCellEdit dataDisplay="MemberList" field="memberUsername" />
-            <RowCellCreate dataDisplay="MemberList" field="memberUsername" />
-            <RowCellView dataDisplay="MemberList" field="memberRole" />
-            <RowCellEdit dataDisplay="MemberList" field="memberRole" />
-            <RowCellCreate dataDisplay="MemberList" field="memberRole" />
-            <RowCellView dataDisplay="MemberList" field="memberNotes" />
-            <RowCellEdit dataDisplay="MemberList" field="memberNotes" />
-            <RowCellCreate dataDisplay="MemberList" field="memberNotes" />
-            <RowCellView dataDisplay="MemberList" field="currentMember" />
-            <RowCellEdit dataDisplay="MemberList" field="currentMember" />
-            <RowCellCreate dataDisplay="MemberList" field="currentMember" />
-            <RowCellView dataDisplay="MemberList" field="memberAddedDate" />
-            <RowCellEdit dataDisplay="MemberList" field="memberAddedDate" />
-            <RowCellView dataDisplay="Criteria" field="criteriaName" />
-            <RowCellEdit dataDisplay="Criteria" field="criteriaName" />
-            <RowCellCreate dataDisplay="Criteria" field="criteriaName" />
-            <RowCellView dataDisplay="Criteria" field="criteriaDatatype" />
-            <RowCellEdit dataDisplay="Criteria" field="criteriaDatatype" />
-            <RowCellCreate dataDisplay="Criteria" field="criteriaDatatype" />
-    */
+    
+    //TODO - check if props.dataDisplay can be changed back to state var with no lag
+    
     return (
         <td>
             {props.dataDisplay==="MemberList" && props.rowType==="view" && <Form.Control plaintext readOnly defaultValue={memberUsername} />}

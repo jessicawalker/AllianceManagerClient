@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Table, Card, Alert } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 //import Row from 'react-bootstrap/Row';
 //import Col from 'react-bootstrap/Col';
 import { useHistory } from "react-router-dom";
@@ -28,13 +28,8 @@ export default function FilterData(props) {
                     params: { unique: fieldName }
                 })
                     .then(function (response) {
-                        //console.log("props.field unique: " + props.field);
-                        console.log("fieldName unique: " + fieldName);
-                        console.log("res.data.results unique 1: " + response.data.results);
+                        console.log(response);
                         setUniqueValues(response.data.results);
-                        console.log("unik unique: " + uniqueValues);
-                        console.log("res.data.results unique 2: " + response.data.results);
-                        console.log("================");
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -44,17 +39,11 @@ export default function FilterData(props) {
 
         fetchData();
         return () => {
-            console.log("unsub userdata-unique for " + props.field);
+            console.log("unsub userdata-unique");
         };
     }, [fieldName]);
 
-    /*
-            <option key={uuidv4()} value={option.member_username} onSelect={(e) => props.filterValues(fieldName, e.target.value)}>{option.member_username}</option>
-            
-            <option key={uuidv4()} value={option.member_username} onSelect={(e) => props.filterValues(fieldName, e.target.value)}>{option.member_username}</option>
-    */
-
-
+    // create JSX pieces for options in select form control
     let memberCurrentItems;
     let memberAllItems;
 
@@ -85,31 +74,16 @@ export default function FilterData(props) {
             </option>
     );
 
+    // send up filter values, to combine with other filters for pagination
     function handleFilter(e) {
-        //e.preventDefault();
         const newFilterValue = dropdownRef.current.value;
         setTrackData(newFilterValue);
-        //filterData, setFilterData
-        //setFilterData(prevFilterData => {});
-
-        // send {fieldName: trackData}
-        //props.filterValues(`{${fieldName}: ${trackData}}`);
-        console.log("handleFilter filterValues dropdownRef.current.value:" + dropdownRef.current.value);
-        console.log("handleFilter filterValues newFilterValue:" + newFilterValue);
-        console.log("handleFilter track e.target.value:" + e.target.value);
-        console.log("handleFilter track setTrackData:" + trackData);
-        console.log("handleFilter track props.field:" + props.field);
         props.filterValues(fieldName, dropdownRef.current.value);
-        console.log("handleFilter filterValues fieldName:" + fieldName);
-        console.log("handleFilter filterValues trackData:" + trackData);
-        console.log("handleFilter filterValues dropdownRef.current.value:" + dropdownRef.current.value);
         history.push('/activities');
-
-        // send up filter values, to combine with other filters for pagination
-        // onChange={(e) => handleFilter(e)
     }
 
 
+     //TODO - fix form control sizes / positioning
 
     return (
         <>

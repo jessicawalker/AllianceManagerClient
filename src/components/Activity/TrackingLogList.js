@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Table, Card, Alert } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+import { Form, Button, Table } from "react-bootstrap";
 import axios from "../../axios";
-//import TrackingHead from './TrackingHead';
-import TrackingCell from './TrackingCell';
 import TrackingStart from './TrackingStart';
-//import RowTool from '../Row/RowTool';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './activities.module.css';
 import TrackingBody from './TrackingBody';
@@ -14,12 +10,10 @@ export default function TrackingLogList() {
     // similar to Members and Tracking Criteria, except columns are dynamically created
     // based on the Tracking Criteria data
 
-    // start at top with default date of today / Date.now()
     // first column: get all members that are current
     // following columns: get names of tracking criteria
     // -- use datatype to determine the type of field
 
-    //const activityDate = new Date(Date.now()).toUTCString();
     const [startTracking, setStartTracking] = useState(false);
     const [activityDate, setActivityDate] = useState(new Date(Date.now()).toISOString());
     const [entryExists, setEntryExists] = useState(false);    // do new entries need to be added?
@@ -71,7 +65,7 @@ export default function TrackingLogList() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        // go to activities page with that date
+        // TODO - go to activities page with that date
     }
 
     return (

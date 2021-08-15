@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Table, Pagination, Alert, Container } from "react-bootstrap";
+import { Form, Table, Pagination } from "react-bootstrap";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useHistory } from "react-router-dom";
@@ -16,12 +16,12 @@ export default function Activities() {
     const [memberActivityData, setActivityData] = useState([{}]);  // master array each user
     const [paginationPage, setPaginationPage] = useState(1);  // choose page of pagination
     const [paginationLimit, setPaginationLimit] = useState(20);  // choose number of items per page
-    const [paginationLength, setPaginationLength] = useState(9999);  // total number of items paginated
-    const [searchParams, setSearchParams] = useState([]);  // master array each user
+    //const [paginationLength, setPaginationLength] = useState();  // total number of items paginated
     const [searchMember, setSearchMember] = useState("");  // get member for filter
     const [searchDate, setSearchDate] = useState("");  // get date for filter
-    const [filterKey, setFilterKey] = useState("");  // master array each user
-    const [filterReturnValue, setFilterValue] = useState("");  // master array each user
+    const [searchParams, setSearchParams] = useState([]);  // get custom params
+    //const [filterKey, setFilterKey] = useState("");  // master array each user
+    //const [filterReturnValue, setFilterValue] = useState("");  // master array each user
     let history = useHistory();
 
     // read current member data
@@ -71,94 +71,27 @@ export default function Activities() {
     // read tracking criteria
     useEffect(() => {
         const fetchData = async () => {
-            //const querystring = `?page=${paginationPage}&limit=${paginationLimit}&${filterKey}=${filterReturnValue}`;
-            //const paramsTest = new URLSearchParams(`page=${paginationPage}&limit=${paginationLimit}&${filterKey}=${filterReturnValue}`);
-            //console.log(paramsTest);
-            //const paramsTest = new URLSearchParams([['page', paginationPage], ['limit', paginationLimit]]);
-            //let filterList = filterKey === "" ? {} : `{"${filterKey}": "${filterReturnValue}"}`;
             const result = await axios.get(
                 '/userdata', {
-                params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate }
-                //params: { page: paginationPage, limit: paginationLimit }
-                //params: { paramsTest }
-                //params: {page: paginationPage, limit: paginationLimit, filter: searchParams}
-                //params: `page: ${paginationPage}, limit: ${paginationLimit}, filter: {${filterKey}: ${filterReturnValue} }`
+                    params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate }
             }
             );
             setActivityData(result.data.results);
-            //setPaginationLength(result.data.results.length);
-            /*setActivityData(prevState => {
-                console.log("prevState: " + prevState);
-                
-        console.log("Object.keys prevState: " + Object.keys(prevState));
-        console.log("Object.values prevState: " + Object.values(prevState));
-        for (const [key, value] of Object.entries(Object.values(prevState))) {
-            console.log(`${key}: ${value}`);
-          }
-                return {...prevState, results: result.data.results}
-            });*/
-            console.log("1 useEffect setActivityData: " + result.data.results);
-            //console.log("2 useEffect setPaginationLength: " + result.data.results.length);
         };
 
         fetchData();
     }, [paginationPage, paginationLimit, searchMember, searchDate]);
 
-
-    //}, [searchParams, paginationPage, paginationLimit]);
-    // search.append(searchDate)
-    // search.append(searchUser)
-    // search.append(filter)   ===> [{claimedSSWar: true},  { activeDeclare: false }]
-
+    
+    //TODO - add sort
     function getSearchParams(filterField, filterValue) {
-        // {fieldName: trackData}
-        //const testParams = Object.create(newParams);
 
         if (filterField === "user") {setSearchMember(filterValue); console.log(filterField + ": " + filterValue)}
         else if (filterField === "date") {setSearchDate(filterValue); console.log(filterField + ": " + filterValue)}
-        else {setSearchParams(`{${filterField}: ${filterValue}}`); console.log(filterField + ": " + filterValue)}
-        
-        //if (filterField === "date") {setSearchDate(new Date(filterValue).toISOString())}
-        //if (filterField === "date") {setSearchDate(new Date(filterValue).toUTCString())}
-
-        /*setFilterKey(filterField);
-        setFilterValue(filterValue);*/
-        console.log("3 getSearchParams filterField: " + filterField)
-        console.log("4 getSearchParams filterValue: " + filterValue)
-        console.log("5 getSearchParams searchMember: " + searchMember)
-        console.log("6 getSearchParams searchDate: " + searchDate)
-        console.log("7 getSearchParams searchParams: " + searchParams)
-
-        // setSearchParams = ...prevParams + param
-        //console.log({newParams});   // {newParams: "{offense: }"}
-        //console.log(newParams);     // {offense: }
-        /*
-        setSearchParams(prevParams => {
-            console.log(prevParams);
-            console.log(newParams);
-            return [...prevParams, newParams];*/
-
-            //return [...prevParams, testParams];
-            // return {claim SS: true}, {offense: true}
-            // {claim SS: true} then add---
-            // {claim SS: true, offense: true}
-        //})
+        else {setSearchParams(`${filterField}: ${filterValue}`); console.log(filterField + ": " + filterValue)}
     }
-/*
-    function checkData() {
-        console.log("checkData filterKey: " + filterKey)
-        console.log("checkData filterReturnValue: " + filterReturnValue)
-        memberActivityData.map((data) => (console.log("checkData filterKey: " + data[filterKey])))
-        memberActivityData.map((data) => (console.log("checkData filterReturnValue: " + data[filterReturnValue])))
-        memberActivityData.map((data) => console.log(data[filterKey] === data[filterReturnValue]))
-        let testFilter = memberActivityData.filter(data => data[filterKey].includes(filterReturnValue))
-        console.log("testFilter: " + testFilter);
-    }*/
-    //checkData();
-    /*
-        {value={new Date(data.date).toLocaleDateString('en-US', displayDate)}
-       
-    */
+
+        //TODO - finish pagination with auto-generate
 
     return (
         <div className="navGap">
@@ -183,6 +116,7 @@ export default function Activities() {
                         /></Col>
                 </Form.Row>
 
+{/*
                 <Form.Group className={styles.secondaryFilter}>
                     <Form.Row>
                         {criteriaData.map((criteria) => (
@@ -196,7 +130,8 @@ export default function Activities() {
                             />
                         ))}
                     </Form.Row>
-                        </Form.Group>
+                </Form.Group>
+*/}
 
                 <Form.Row>
                     <Col>
@@ -245,8 +180,6 @@ export default function Activities() {
                             <TrackingCellView
                                 key={uuidv4()}
                                 idValue={data._id}
-                                itemDate={data.date}
-                                itemUser={data.user}
                                 field="date"
                                 value={data.date}
                                 criteria_datatype="Date"
@@ -254,8 +187,6 @@ export default function Activities() {
                             <TrackingCellView
                                 key={uuidv4()}
                                 idValue={data._id}
-                                itemDate={data.date}
-                                itemUser={data.user}
                                 field="user"
                                 value={data.user}
                                 criteria_datatype="String"
@@ -265,8 +196,6 @@ export default function Activities() {
                                 <TrackingCellView
                                     key={uuidv4()}
                                     idValue={data._id}
-                                    itemDate={data.date}
-                                    itemUser={data.user}
                                     field={criteria.criteria_key}
                                     value={data[criteria.criteria_key]}
                                     criteria_datatype={criteria.criteria_datatype}
@@ -275,8 +204,6 @@ export default function Activities() {
                             <TrackingCellView
                                 key={uuidv4()}
                                 idValue={data._id}
-                                itemDate={data.date}
-                                itemUser={data.user}
                                 field="notes"
                                 value={data.notes}
                                 criteria_datatype="String"

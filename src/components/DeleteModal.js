@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Modal, Alert } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 
 export default function DeleteModal(props) {
     const { onDelete, dataToDelete, ...rest } = props;

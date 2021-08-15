@@ -6,16 +6,6 @@ import axios from "../../axios";
 import { v4 as uuidv4 } from 'uuid';
 import styles from './TrackingSetup.module.css';
 
-
-
-/*if (props.members.length === 0) {
-    return  (
-        <div>
-            <p>No members</p>
-        </div>
-    )
-}*/
-
 export default function TrackingSetupList(props) {
     const [criteriaData, setCriteriaData] = useState([{}]);
     let history = useHistory();
@@ -31,17 +21,6 @@ export default function TrackingSetupList(props) {
 
         fetchData();
     }, [criteriaData]);
-/*
-    const viewDataHandler = async () => {
-        await axios.get(`/trackingcriteria`)
-            .then(function (response) {
-                console.log(response);
-                history.push('/tracking-setup');
-            })
-            .catch(function (error) {
-                console.log(error.response.data);
-            });
-    };*/
 
     const updateDataHandler = async (updateCriteriaData) => {
         const currentId = updateCriteriaData._id;

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Table, Card, Alert } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+import { Form, Button } from "react-bootstrap";
 import axios from "../../axios";
-import TrackingCell from './TrackingCell';
 import styles from './activities.module.css';
 
 export default function TrackingStart(props) {
@@ -31,7 +29,6 @@ export default function TrackingStart(props) {
             const addMemberEntry = {};
             addMemberEntry['date'] = new Date(activityDate).toISOString();
             addMemberEntry['user'] = memberData[x].member_username;
-            //props.criteriaData.map((criteria) => (addMemberEntry[criteria.criteria_key] = ""));
             
             props.criteriaData.map((criteria) => {
                 let defaultValue;
@@ -57,8 +54,9 @@ export default function TrackingStart(props) {
 
                 if (compare === true) break;
 
-                // using props isn't working for this
+                // TODO - using props isn't working for this
                 // it's comparing to the previous date, not all dates read
+                // try useRef?
 
                 console.log(addMemberEntry['date']);
                 console.log(props.initialData[y].date);

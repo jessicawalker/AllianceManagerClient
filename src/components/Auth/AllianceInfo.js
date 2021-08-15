@@ -40,7 +40,6 @@ export default function AllianceInfo() {
         const enteredGameName = gameNameRef.current.value;
         const currentId = allianceData._id;
 
-        // should there also be a setAlData here?
         if (enteredAllianceName === "" || enteredGameName === "") {
             return;
         }

@@ -3,7 +3,6 @@ import { Form, Button, Alert } from "react-bootstrap";
 import FloatingLabel from "react-bootstrap-floating-label";
 import { useHistory } from 'react-router-dom';
 import DeleteModal from '../DeleteModal';
-//import RowCell from './RowCell';
 import styles from './Row.module.css';
 
 export default function RowTool(props) {
@@ -19,6 +18,7 @@ export default function RowTool(props) {
     const [dataDisplay, setDataDisplay] = useState(props.dataDisplay);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     let history = useHistory();
+    const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
 
     // members
     const memberUsernameRef = useRef();
@@ -47,6 +47,7 @@ export default function RowTool(props) {
         }
     }
 
+    //TODO - show validation feedback
     async function handleClickUpdate(e) {
         e.preventDefault();
         setRowType("view");
@@ -59,8 +60,6 @@ export default function RowTool(props) {
             setMemberUsername(enteredMemberUsername);
             setMemberRole(enteredMemberRole);
             setMemberNotes(enteredMemberNotes);
-            //if (props.idValue.length > 0)
-            //   {} //memberData._id;
 
             const updateMemberData = {
                 _id: entryId,
@@ -74,12 +73,9 @@ export default function RowTool(props) {
             if (dataDisplay === "Criteria") {
                 const enteredCriteriaName = criteriaNameRef.current.value;
                 const enteredCriteriaDatatype = criteriaDatatypeRef.current.value;
-                //const currentId = entryId;
 
                 setCriteriaName(enteredCriteriaName);
                 setCriteriaDatatype(enteredCriteriaDatatype);
-                //if (props.idValue.length > 0)
-                //   {} //memberData._id;
 
                 const updateCriteriaData = {
                     _id: entryId,
@@ -95,8 +91,6 @@ export default function RowTool(props) {
         setRowType("view");
 
         if (dataDisplay === "MemberList") {
-            //if (props.idValue.length > 0)
-            //   {} //memberData._id;
 
             const newMemberData = {
                 member_username: memberUsername,
@@ -108,9 +102,6 @@ export default function RowTool(props) {
             await props.onSaveData(newMemberData);
         } else
             if (dataDisplay === "Criteria") {
-
-                //if (props.idValue.length > 0)
-                //   {} //memberData._id;
 
                 const newCriteriaData = {
                     criteria_name: criteriaName,
@@ -128,6 +119,7 @@ export default function RowTool(props) {
         } 
     }
 
+    //TODO - check if props.dataDisplay can be changed back to state var with no lag
     return (
 
         <tr className="align-middle border-top border-bottom">
@@ -189,11 +181,11 @@ export default function RowTool(props) {
 
             {props.dataDisplay === "MemberList" && rowType === "view" &&
                 <td>
-                    <Form.Control plaintext readOnly defaultValue={memberAddedDate} />
+                    <Form.Control plaintext readOnly defaultValue={new Date(memberAddedDate).toLocaleDateString('en-US', displayDate)} />
                 </td>}
             {props.dataDisplay === "MemberList" && rowType === "edit" &&
                 <td>
-                    <Form.Control plaintext readOnly defaultValue={memberAddedDate} ref={memberAddedDateRef} />
+                    <Form.Control plaintext readOnly defaultValue={new Date(memberAddedDate).toLocaleDateString('en-US', displayDate)} ref={memberAddedDateRef} />
                 </td>}
 
 
