@@ -12,72 +12,41 @@ export default function FilterData(props) {
     const [fieldLabel, setFieldLabel] = useState(props.filterName); // label name of field
     const [fieldName, setFieldName] = useState(props.field); // key name of field
     const [dataType, setDataType] = useState(props.criteria_datatype); // datatype of field
-    const [trackData, setTrackData] = useState(props.value); // value of field
+    const [trackData, setTrackData] = useState(""); // value of field
     //const [filterData, setFilterData] = useState({}); // value of chosen filters
     const [uniqueValues, setUniqueValues] = useState([]); // unique values for field
     let history = useHistory();
 
     const dropdownRef = useRef();
-
-    /*
-    // read current member data
-    useEffect(() => {
-        const fetchData = async () => {
-            let result = await axios(
-                '/members-current',
-            );
-            console.log(result.data);
-            console.log(result.data.members);
-            setMemberDataCurrent(result.data.members);
-        };
-
-        fetchData();
-        return () => {
-            //history.push('/activities');
-            console.log("unsub");
-        };
-    }, []);
-
-    // read all member data
-    useEffect(() => {
-        const fetchData = async () => {
-            let result = await axios(
-                '/members-all',
-            );
-            console.log(result.data);
-            console.log(result.data.members);
-            setMemberDataAll(result.data.members);
-        };
-
-        fetchData();
-        return () => {
-            //history.push('/activities');
-            console.log("unsub");
-        };
-    }, []);*/
+    const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
 
     // read all user data, filter for field's unique values
     useEffect(() => {
         const fetchData = async () => {
-            //if (props.field === "user") return;
-            await axios.get('/userdata-unique', {
-                params: { unique: props.field }
-            })
-                .then(function (response) {
-                    console.log(response);
-                    setUniqueValues(response.data.results);
+            if (fieldName !== "user") {
+                await axios.get('/userdata-unique', {
+                    params: { unique: fieldName }
                 })
-                .catch(function (error) {
-                    console.log(error);
-                });
+                    .then(function (response) {
+                        //console.log("props.field unique: " + props.field);
+                        console.log("fieldName unique: " + fieldName);
+                        console.log("res.data.results unique 1: " + response.data.results);
+                        setUniqueValues(response.data.results);
+                        console.log("unik unique: " + uniqueValues);
+                        console.log("res.data.results unique 2: " + response.data.results);
+                        console.log("================");
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
         };
 
         fetchData();
         return () => {
             console.log("unsub userdata-unique for " + props.field);
         };
-        //}, []);
-    }, [props.field]);
+    }, [fieldName]);
 
     /*
             <option key={uuidv4()} value={option.member_username} onSelect={(e) => props.filterValues(fieldName, e.target.value)}>{option.member_username}</option>
@@ -94,13 +63,11 @@ export default function FilterData(props) {
         memberCurrentItems = props.membersCurrentList.map((option) => (
             <option key={uuidv4()} value={option.member_username}>{option.member_username}</option>
         ))
-        console.log("gen fieldName === current user: " + fieldName);
 
         // generate alphabetized list of all members
         memberAllItems = props.membersAllList.map((option) => (
             <option key={uuidv4()} value={option.member_username}>{option.member_username}</option>
         ))
-        console.log("gen fieldName === all user: " + fieldName);
     }
 
     // generate alphabetized list of options per field
@@ -108,12 +75,13 @@ export default function FilterData(props) {
         fieldName !== undefined && 
         fieldName !== "user" && 
         fieldName !== "notes" && 
-        console.log("selectItems: " + fieldName) &&
         uniqueValues.sort((a, b) => (a > b) ? -1 : 1).map(
             (item) =>
             <option key={uuidv4()} value={item}>
-                {dataType !== "Date" && item}
-                {dataType === "Date" && new Date(item).toDateString()}
+                {dataType !== "Boolean" && dataType !== "Date" && item}
+                {dataType === "Boolean" && (item === true || item === "true") && "Yes"}
+                {dataType === "Boolean" && (item === false || item === "false") && "No"}
+                {dataType === "Date" && new Date(item).toLocaleDateString('en-US', displayDate)}
             </option>
     );
 
@@ -126,11 +94,15 @@ export default function FilterData(props) {
 
         // send {fieldName: trackData}
         //props.filterValues(`{${fieldName}: ${trackData}}`);
+        console.log("handleFilter filterValues dropdownRef.current.value:" + dropdownRef.current.value);
+        console.log("handleFilter filterValues newFilterValue:" + newFilterValue);
         console.log("handleFilter track e.target.value:" + e.target.value);
         console.log("handleFilter track setTrackData:" + trackData);
+        console.log("handleFilter track props.field:" + props.field);
         props.filterValues(fieldName, dropdownRef.current.value);
         console.log("handleFilter filterValues fieldName:" + fieldName);
         console.log("handleFilter filterValues trackData:" + trackData);
+        console.log("handleFilter filterValues dropdownRef.current.value:" + dropdownRef.current.value);
         history.push('/activities');
 
         // send up filter values, to combine with other filters for pagination
@@ -147,8 +119,8 @@ export default function FilterData(props) {
                 size="sm" 
                 as="select" 
                 name={fieldName} 
-                value={trackData} 
                 ref={dropdownRef}
+                value={trackData}
                 onChange={handleFilter}>
 
                 <option value="">all</option>

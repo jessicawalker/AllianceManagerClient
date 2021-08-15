@@ -78,7 +78,7 @@ export default function Activities() {
             //let filterList = filterKey === "" ? {} : `{"${filterKey}": "${filterReturnValue}"}`;
             const result = await axios.get(
                 '/userdata', {
-                params: { page: paginationPage, limit: paginationLimit, user: searchMember }
+                params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate }
                 //params: { page: paginationPage, limit: paginationLimit }
                 //params: { paramsTest }
                 //params: {page: paginationPage, limit: paginationLimit, filter: searchParams}
@@ -114,8 +114,9 @@ export default function Activities() {
         // {fieldName: trackData}
         //const testParams = Object.create(newParams);
 
-        if (filterField === "user") {setSearchMember(filterValue)}
-        if (filterField === "date") {setSearchDate(filterValue)}
+        if (filterField === "user") {setSearchMember(filterValue); console.log(filterField + ": " + filterValue)}
+        else if (filterField === "date") {setSearchDate(filterValue); console.log(filterField + ": " + filterValue)}
+        else {setSearchParams(`{${filterField}: ${filterValue}}`); console.log(filterField + ": " + filterValue)}
         
         //if (filterField === "date") {setSearchDate(new Date(filterValue).toISOString())}
         //if (filterField === "date") {setSearchDate(new Date(filterValue).toUTCString())}
@@ -124,6 +125,9 @@ export default function Activities() {
         setFilterValue(filterValue);*/
         console.log("3 getSearchParams filterField: " + filterField)
         console.log("4 getSearchParams filterValue: " + filterValue)
+        console.log("5 getSearchParams searchMember: " + searchMember)
+        console.log("6 getSearchParams searchDate: " + searchDate)
+        console.log("7 getSearchParams searchParams: " + searchParams)
 
         // setSearchParams = ...prevParams + param
         //console.log({newParams});   // {newParams: "{offense: }"}
@@ -178,7 +182,7 @@ export default function Activities() {
                             filterValues={getSearchParams}
                         /></Col>
                 </Form.Row>
-{/*
+
                 <Form.Group className={styles.secondaryFilter}>
                     <Form.Row>
                         {criteriaData.map((criteria) => (
@@ -192,7 +196,7 @@ export default function Activities() {
                             />
                         ))}
                     </Form.Row>
-                        </Form.Group>*/}
+                        </Form.Group>
 
                 <Form.Row>
                     <Col>

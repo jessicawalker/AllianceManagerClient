@@ -40,12 +40,6 @@ export default function TrackingCellView(props) {
         setStyleData({cellFalseStyle});
     }
 
-    if (dataType === "Date") {
-        let prevData = trackData;
-        //setTrackData(new Date(prevData).toLocaleDateString('en-US', displayDate));
-    }
-
-
     return (
         <td style={styleData} className={variantClass}>
             {dataType === "Date" && new Date(trackData).toLocaleDateString('en-US', displayDate)}
