@@ -7,29 +7,49 @@ import styles from './activities.module.css';
 
 export default function TrackingCellView(props) {
     const [trackData, setTrackData] = useState(props.value);
+    const [styleData, setStyleData] = useState({});
+    const [variantClass, setVariantClass] = useState();
     const [fieldName, setFieldName] = useState(props.field);
     const [dataType, setDataType] = useState(props.criteria_datatype);
     const [idValue, setIdValue] = useState(props.idValue);
     const [itemDate, setItemDate] = useState(props.itemDate);
     const [itemUser, setItemUser] = useState(props.itemUser);
+    const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
     let history = useHistory();
-/*
-    if (dataType === "Boolean" && trackData === "") {
-        setTrackData(false)
-    } else
-    if (dataType === "String" && trackData === "") {
-        setTrackData("")
-    } else
-    if (dataType === "Number" && trackData === "") {
-        setTrackData("0")
-    } else
-    if (dataType === "Date" && trackData === "") {
-        setTrackData(new Date(Date.now()).toISOString())
-    }*/
+
+    const cellTrueStyle = {
+        backgroundColor: "#d1e7dd",
+        borderColor: "#badbcc",
+        color: "#0f5132"
+    };
+    const cellFalseStyle = {
+        backgroundColor: "#f8d7da",
+        borderColor: "#f5c2c7",
+        color: "#842029"
+    };
+
+    if (trackData === true || trackData === "true") {
+        setTrackData("Yes");
+        setVariantClass("table-success");
+        setStyleData({cellTrueStyle});
+    }
+
+    if (trackData === false || trackData === "false") {
+        setTrackData("No");
+        setVariantClass("table-danger");
+        setStyleData({cellFalseStyle});
+    }
+
+    if (dataType === "Date") {
+        let prevData = trackData;
+        //setTrackData(new Date(prevData).toLocaleDateString('en-US', displayDate));
+    }
+
 
     return (
-        <td>
-            {trackData}
+        <td style={styleData} className={variantClass}>
+            {dataType === "Date" && new Date(trackData).toLocaleDateString('en-US', displayDate)}
+            {dataType !== "Date" && trackData}
         </td>
     )
 }
