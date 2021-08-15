@@ -16,7 +16,7 @@ export default function Activities() {
     const [memberActivityData, setActivityData] = useState([{}]);  // master array each user
     const [paginationPage, setPaginationPage] = useState(1);  // choose page of pagination
     const [paginationLimit, setPaginationLimit] = useState(20);  // choose number of items per page
-    //const [paginationLength, setPaginationLength] = useState();  // total number of items paginated
+    const [paginationLength, setPaginationLength] = useState(0);  // total number of items paginated
     const [searchMember, setSearchMember] = useState("");  // get member for filter
     const [searchDate, setSearchDate] = useState("");  // get date for filter
     const [searchParams, setSearchParams] = useState([]);  // get custom params
@@ -77,6 +77,7 @@ export default function Activities() {
             }
             );
             setActivityData(result.data.results);
+            setPaginationLength(result.data.total);
         };
 
         fetchData();
@@ -91,7 +92,42 @@ export default function Activities() {
         else {setSearchParams(`${filterField}: ${filterValue}`); console.log(filterField + ": " + filterValue)}
     }
 
-        //TODO - finish pagination with auto-generate
+    // auto-generate pagination numbered items
+    let paginationItems = [];
+    const showPagination = () => {
+
+        // avoid infinite loop caused by for loop's increment when "Show All"
+        if (paginationLimit !== "") {
+            paginationItems.push(
+                <Pagination.First 
+                    disabled={(paginationPage <= 1) || paginationLimit === ""} 
+                    onClick={(e) => setPaginationPage(1)} 
+                />,
+                <Pagination.Prev 
+                    disabled={(paginationPage <= 1) || paginationLimit === ""} 
+                    onClick={(e) => setPaginationPage(prevPage => prevPage - 1)} 
+                />);
+
+            for (let number = 1; number <= Math.ceil(paginationLength / paginationLimit); number++) {
+                paginationItems.push(
+                <Pagination.Item 
+                    key={number}
+                    onClick={(e) => setPaginationPage(number)}
+                    active={paginationPage === number}
+                >{number}</Pagination.Item>);
+            }
+
+            paginationItems.push(
+            <Pagination.Next 
+                disabled={(paginationPage >= Math.ceil(paginationLength / paginationLimit) || paginationLimit === "")} 
+                onClick={() => setPaginationPage(prevPage => prevPage + 1)} 
+            />,
+            <Pagination.Last
+                disabled={(paginationPage >= Math.ceil(paginationLength / paginationLimit) || paginationLimit === "")} 
+                onClick={(e) => setPaginationPage(Math.ceil(paginationLength / paginationLimit))} 
+            />);}
+    }
+    showPagination();
 
     return (
         <div className="navGap">
@@ -136,18 +172,7 @@ export default function Activities() {
                 <Form.Row>
                     <Col>
                         <Pagination>
-                            <Pagination.First onClick={(e) => setPaginationPage(1)} />
-                            <Pagination.Prev onClick={(e) => setPaginationPage(paginationPage - 1)} />
-                            <Pagination.Item>{1}</Pagination.Item>
-
-                            <Pagination.Item onClick={(e) => setPaginationPage(4)}>{4}</Pagination.Item>
-                            <Pagination.Item>{5}</Pagination.Item>
-                            <Pagination.Item active>{12}</Pagination.Item>
-                            <Pagination.Item>{13}</Pagination.Item>
-
-                            <Pagination.Item>{20}</Pagination.Item>
-                            <Pagination.Next onClick={(e) => setPaginationPage(paginationPage + 1)} />
-                            <Pagination.Last />
+                            {paginationItems}
                         </Pagination>
                     </Col>
                     <Col xs lg="2">
@@ -212,6 +237,13 @@ export default function Activities() {
                     )}
                 </tbody>
             </Table>
+                <Form.Row>
+                    <Col>
+                        <Pagination>
+                            {paginationItems}
+                        </Pagination>
+                    </Col>
+                </Form.Row>
         </div>
     )
 }
