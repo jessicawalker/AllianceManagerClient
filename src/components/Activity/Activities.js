@@ -131,8 +131,9 @@ export default function Activities() {
 
     return (
         <div className="navGap">
+        <h2 className="text-center mb-4">Activity Logs</h2>
             <Form inline>
-                <Form.Row>
+                <Form.Row className={styles.reportTools}>
                     <Col xs={4}>
                         <FilterData
                             filterName="Date"
@@ -141,7 +142,7 @@ export default function Activities() {
                             filterValues={getSearchParams}
                         />
                     </Col>
-                    <Col xs={4}>
+                    <Col xs={6}>
                         <FilterData
                             filterName="Member"
                             field="user"
@@ -169,12 +170,7 @@ export default function Activities() {
                 </Form.Group>
 */}
 
-                <Form.Row>
-                    <Col>
-                        <Pagination>
-                            {paginationItems}
-                        </Pagination>
-                    </Col>
+                <Form.Row className={styles.reportTools}>
                     <Col xs lg="2">
                         <Form.Control className="mb-2 mr-sm-2" as="select" name="paginationOptions" onChange={(e) => setPaginationLimit(e.target.value)}>
                             <option>20</option>
@@ -184,16 +180,21 @@ export default function Activities() {
                             <option value="">Show All</option>
                         </Form.Control>
                     </Col>
+                    <Col>
+                        <Pagination>
+                            {paginationItems}
+                        </Pagination>
+                    </Col>
                 </Form.Row>
             </Form>
 
             <Table className="table" striped bordered hover responsive="md">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>User</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">User</th>
                         {criteriaData.map((criteria) => (
-                            <th key={uuidv4()}>{criteria.criteria_name}</th>
+                            <th scope="col" key={uuidv4()}>{criteria.criteria_name}</th>
                         ))}
                         <th>Notes</th>
                     </tr>
