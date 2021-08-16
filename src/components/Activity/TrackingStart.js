@@ -7,7 +7,6 @@ export default function TrackingStart(props) {
     //const [entryExists, setEntryExists] = useState(props.skipNewEntry);
     const [activityDate, setActivityDate] = useState(new Date(Date.now()).toISOString());
     const [memberData, setMemberData] = useState([{}]);    // members list
-    const [criteriaData, setCriteriaData] = useState(props.criteriaData);    // tracking criteria list
 
     // read all current members
     useEffect(() => {
@@ -47,45 +46,18 @@ export default function TrackingStart(props) {
 
             addMemberEntry['notes'] = "";
 
-            let compare = false;
-
-            for (let y = 0; y < props.initialData.length; y++) {
-                compare = Object.is(addMemberEntry['date'], props.initialData[y].date) && Object.is(addMemberEntry['user'], props.initialData[y].user);
-
-                if (compare === true) break;
-
-                // TODO - using props isn't working for this
-                // it's comparing to the previous date, not all dates read
-                // try useRef?
-
-                console.log(addMemberEntry['date']);
-                console.log(props.initialData[y].date);
-
-                console.log("Objects.value(addMemberEntry['date']: " + 
-                    Object.values(addMemberEntry['date']));
-                console.log("Object.values(props.initialData[y].date) " + 
-                    Object.values(props.initialData[y].date));
-
-                console.log("Object.is(date): " + Object.is(addMemberEntry['date'], props.initialData[y].date))
-                console.log("Object.is(user): " + Object.is(addMemberEntry['user'], props.initialData[y].user))
-                console.log("compare if: " + compare)
-
-            }
-            
-            // get out of outer loop to skip post of duplicate
-            if (compare === true) continue;
-
-                // add each member row into the userdata database
-                await axios.post('/userdata-add', {
-                    addMemberEntry
+            // TODO - prevent duplicate entries; search if date exists, pull in data to edit if it does; otherwise, post
+            // add each member row into the userdata database
+            await axios.post('/userdata-add', {
+                addMemberEntry
+            })
+                .then(function (response) {
+                    console.log(response);
                 })
-                    .then(function (response) {
-                        console.log(response);
-                    })
-                    .catch(function (error) {
-                        console.log(error.response.data);
-                    });
-                //}
+                .catch(function (error) {
+                    console.log(error.response.data);
+                });
+            //}
             }
             props.showForm(activityDate);
         }

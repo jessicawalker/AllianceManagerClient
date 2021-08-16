@@ -87,8 +87,6 @@ export default function Activities(props) {
         fetchData();
     }, [paginationPage, paginationLimit, searchMember, searchDate, sortBy]);
 
-    
-    //TODO - add sort
     function getSearchParams(filterField, filterValue) {
 
         if (filterField === "user") 
