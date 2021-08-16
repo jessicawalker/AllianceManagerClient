@@ -82,9 +82,6 @@ export default function FilterData(props) {
         history.push('/activities');
     }
 
-
-     //TODO - fix form control sizes / positioning
-
     return (
         <>
             <Form.Label>{fieldLabel}: </Form.Label>
