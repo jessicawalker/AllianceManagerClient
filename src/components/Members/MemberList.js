@@ -40,7 +40,6 @@ export default function MemberList(props) {
             })
                 .then(function (response) {
                     console.log(response);
-                    //history.push('/members');
                     const fetchData = async () => {
                         const result = await axios(
                             '/members',
@@ -109,7 +108,6 @@ export default function MemberList(props) {
                 </tbody>
                 
             </Table>
-        {memberData.length === 0 && <h3>No members! Would you like to add anyone as an alliance member?</h3>}
         </Form>
     )
 }

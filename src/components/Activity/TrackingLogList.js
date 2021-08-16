@@ -75,6 +75,7 @@ export default function TrackingLogList() {
 
             {startTracking &&
                 <Table className="table" striped bordered hover responsive="md">
+                    <caption>Your updates are being autosaved</caption>
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -91,7 +92,7 @@ export default function TrackingLogList() {
             }
             {startTracking && 
                 <div className={styles.addSection}>
-                    <Button type="submit" onClick={handleSubmit}>Finish Tracking</Button>
+                    <Button href="/activities" saveDataBtn="true">Finish Tracking</Button>
                 </div>}
         </Form>
     )
