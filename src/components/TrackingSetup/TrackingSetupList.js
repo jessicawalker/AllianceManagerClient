@@ -20,7 +20,10 @@ export default function TrackingSetupList(props) {
         };
 
         fetchData();
-    }, [criteriaData]);
+        history.push('/tracking-setup');
+
+        return () => {console.log("fetched")}
+    }, []);
 
     const updateDataHandler = async (updateCriteriaData) => {
         const currentId = updateCriteriaData._id;
@@ -36,7 +39,6 @@ export default function TrackingSetupList(props) {
                 })
                     .then(function (response) {
                         console.log(response);
-                        history.push('/tracking-setup');
                     })
                     .catch(function (error) {
                         console.log(error.response.data);
