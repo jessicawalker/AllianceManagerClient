@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Table, Pagination } from "react-bootstrap";
+import { Form, Table, Pagination, Alert } from "react-bootstrap";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useHistory } from "react-router-dom";
@@ -9,7 +9,7 @@ import FilterData from './FilterData';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './activities.module.css';
 
-export default function Activities() {
+export default function Activities(props) {
     const [memberDataCurrent, setMemberDataCurrent] = useState([{}]);    // current members list
     const [memberDataAll, setMemberDataAll] = useState([{}]);    // all members list
     const [criteriaData, setCriteriaData] = useState([{}]);    // tracking criteria list
@@ -19,10 +19,14 @@ export default function Activities() {
     const [paginationLength, setPaginationLength] = useState(0);  // total number of items paginated
     const [searchMember, setSearchMember] = useState("");  // get member for filter
     const [searchDate, setSearchDate] = useState("");  // get date for filter
+    const [sortBy, setSortBy] = useState("");  // get date for filter
     const [searchParams, setSearchParams] = useState([]);  // get custom params
     //const [filterKey, setFilterKey] = useState("");  // master array each user
     //const [filterReturnValue, setFilterValue] = useState("");  // master array each user
     let history = useHistory();
+
+    //if (props.saveDataBtn) setSearchDate(new Date(props.saveDataDate).toISOString());
+
 
     // read current member data
     useEffect(() => {
@@ -73,7 +77,7 @@ export default function Activities() {
         const fetchData = async () => {
             const result = await axios.get(
                 '/userdata', {
-                    params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate }
+                    params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy }
             }
             );
             setActivityData(result.data.results);
@@ -81,15 +85,24 @@ export default function Activities() {
         };
 
         fetchData();
-    }, [paginationPage, paginationLimit, searchMember, searchDate]);
+    }, [paginationPage, paginationLimit, searchMember, searchDate, sortBy]);
 
     
     //TODO - add sort
     function getSearchParams(filterField, filterValue) {
 
-        if (filterField === "user") {setSearchMember(filterValue); console.log(filterField + ": " + filterValue)}
-        else if (filterField === "date") {setSearchDate(filterValue); console.log(filterField + ": " + filterValue)}
-        else {setSearchParams(`${filterField}: ${filterValue}`); console.log(filterField + ": " + filterValue)}
+        if (filterField === "user") 
+            {setSearchMember(filterValue);
+        }
+        else if (filterField === "date") {
+            setSearchDate(filterValue);
+        }
+        else if (filterField === "sort") {
+            setSortBy(filterValue);
+        }
+        else {
+            setSearchParams(`${filterField}: ${filterValue}`); console.log(filterField + ": " + filterValue)
+        }
     }
 
     // auto-generate pagination numbered items
@@ -151,6 +164,14 @@ export default function Activities() {
                             membersAllList={memberDataAll}
                             filterValues={getSearchParams}
                         /></Col>
+                    <Col xs={2}>
+                        <FilterData
+                            filterName="Sort By"
+                            field="sort"
+                            filterValues={getSearchParams}
+                            criteria_datatype="None"
+                        />
+                        </Col>
                 </Form.Row>
 
 {/*

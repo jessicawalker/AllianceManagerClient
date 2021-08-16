@@ -94,13 +94,15 @@ export default function FilterData(props) {
                 value={trackData}
                 onChange={handleFilter}>
 
-                <option value="">all</option>
+                {fieldName !== "sort" && <option value="">all</option>}
 
                 {selectItems}
 
                 {showCurrentMembers && fieldName === "user" && memberCurrentItems}
                 {!showCurrentMembers && fieldName === "user" && memberAllItems}
 
+                {fieldName === "sort" && dataType === "None" && <option key={uuidv4()} value="date">Date</option>}
+                {fieldName === "sort" && dataType === "None" && <option key={uuidv4()} value="user">Member</option>}
             </Form.Control>
 
             {fieldName === "user" &&
