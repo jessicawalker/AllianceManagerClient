@@ -77,7 +77,7 @@ export default function Activities(props) {
         const fetchData = async () => {
             const result = await axios.get(
                 '/userdata', {
-                    params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy }
+                params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy }
             }
             );
             setActivityData(result.data.results);
@@ -89,8 +89,8 @@ export default function Activities(props) {
 
     function getSearchParams(filterField, filterValue) {
 
-        if (filterField === "user") 
-            {setSearchMember(filterValue);
+        if (filterField === "user") {
+            setSearchMember(filterValue);
         }
         else if (filterField === "date") {
             setSearchDate(filterValue);
@@ -110,33 +110,34 @@ export default function Activities(props) {
         // avoid infinite loop caused by for loop's increment when "Show All"
         if (paginationLimit !== "") {
             paginationItems.push(
-                <Pagination.First 
-                    disabled={(paginationPage <= 1) || paginationLimit === ""} 
-                    onClick={(e) => setPaginationPage(1)} 
+                <Pagination.First
+                    disabled={(paginationPage <= 1) || paginationLimit === ""}
+                    onClick={(e) => setPaginationPage(1)}
                 />,
-                <Pagination.Prev 
-                    disabled={(paginationPage <= 1) || paginationLimit === ""} 
-                    onClick={(e) => setPaginationPage(prevPage => prevPage - 1)} 
+                <Pagination.Prev
+                    disabled={(paginationPage <= 1) || paginationLimit === ""}
+                    onClick={(e) => setPaginationPage(prevPage => prevPage - 1)}
                 />);
 
             for (let number = 1; number <= Math.ceil(paginationLength / paginationLimit); number++) {
                 paginationItems.push(
-                <Pagination.Item 
-                    key={number}
-                    onClick={(e) => setPaginationPage(number)}
-                    active={paginationPage === number}
-                >{number}</Pagination.Item>);
+                    <Pagination.Item
+                        key={number}
+                        onClick={(e) => setPaginationPage(number)}
+                        active={paginationPage === number}
+                    >{number}</Pagination.Item>);
             }
 
             paginationItems.push(
-            <Pagination.Next 
-                disabled={(paginationPage >= Math.ceil(paginationLength / paginationLimit) || paginationLimit === "")} 
-                onClick={() => setPaginationPage(prevPage => prevPage + 1)} 
-            />,
-            <Pagination.Last
-                disabled={(paginationPage >= Math.ceil(paginationLength / paginationLimit) || paginationLimit === "")} 
-                onClick={(e) => setPaginationPage(Math.ceil(paginationLength / paginationLimit))} 
-            />);}
+                <Pagination.Next
+                    disabled={(paginationPage >= Math.ceil(paginationLength / paginationLimit) || paginationLimit === "")}
+                    onClick={() => setPaginationPage(prevPage => prevPage + 1)}
+                />,
+                <Pagination.Last
+                    disabled={(paginationPage >= Math.ceil(paginationLength / paginationLimit) || paginationLimit === "")}
+                    onClick={(e) => setPaginationPage(Math.ceil(paginationLength / paginationLimit))}
+                />);
+        }
     }
     showPagination();
 
@@ -169,10 +170,10 @@ export default function Activities(props) {
                             filterValues={getSearchParams}
                             criteria_datatype="None"
                         />
-                        </Col>
+                    </Col>
                 </Form.Row>
 
-{/*
+                {/*
                 <Form.Group className={styles.secondaryFilter}>
                     <Form.Row>
                         {criteriaData.map((criteria) => (
@@ -206,64 +207,65 @@ export default function Activities(props) {
                     </Col>
                 </Form.Row>
             </Form>
-
-            <Table className="`table activitiesTable`" striped bordered hover responsive="md">
-                <thead>
-                    <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">User</th>
-                        {criteriaData.map((criteria) => (
-                            <th scope="col" key={uuidv4()}>{criteria.criteria_name}</th>
-                        ))}
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {memberActivityData
-                    .map((data) => (
-                        <tr key={uuidv4()}>
-                            <TrackingCellView
-                                key={uuidv4()}
-                                idValue={data._id}
-                                field="date"
-                                value={data.date}
-                                criteria_datatype="Date"
-                            />
-                            <TrackingCellView
-                                key={uuidv4()}
-                                idValue={data._id}
-                                field="user"
-                                value={data.user}
-                                criteria_datatype="String"
-                            />
-
+            <div className={styles.activitiesTable}>
+                <Table className="table" striped bordered hover responsive="md">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">User</th>
                             {criteriaData.map((criteria) => (
-                                <TrackingCellView
-                                    key={uuidv4()}
-                                    idValue={data._id}
-                                    field={criteria.criteria_key}
-                                    value={data[criteria.criteria_key]}
-                                    criteria_datatype={criteria.criteria_datatype}
-                                />))}
+                                <th scope="col" key={uuidv4()}>{criteria.criteria_name}</th>
+                            ))}
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {memberActivityData
+                            .map((data) => (
+                                <tr key={uuidv4()}>
+                                    <TrackingCellView
+                                        key={uuidv4()}
+                                        idValue={data._id}
+                                        field="date"
+                                        value={data.date}
+                                        criteria_datatype="Date"
+                                    />
+                                    <TrackingCellView
+                                        key={uuidv4()}
+                                        idValue={data._id}
+                                        field="user"
+                                        value={data.user}
+                                        criteria_datatype="String"
+                                    />
 
-                            <TrackingCellView
-                                key={uuidv4()}
-                                idValue={data._id}
-                                field="notes"
-                                value={data.notes}
-                                criteria_datatype="String"
-                            />
-                        </tr>)
-                    )}
-                </tbody>
-            </Table>
-                <Form.Row>
-                    <Col>
-                        <Pagination>
-                            {paginationItems}
-                        </Pagination>
-                    </Col>
-                </Form.Row>
+                                    {criteriaData.map((criteria) => (
+                                        <TrackingCellView
+                                            key={uuidv4()}
+                                            idValue={data._id}
+                                            field={criteria.criteria_key}
+                                            value={data[criteria.criteria_key]}
+                                            criteria_datatype={criteria.criteria_datatype}
+                                        />))}
+
+                                    <TrackingCellView
+                                        key={uuidv4()}
+                                        idValue={data._id}
+                                        field="notes"
+                                        value={data.notes}
+                                        criteria_datatype="String"
+                                    />
+                                </tr>)
+                            )}
+                    </tbody>
+                </Table>
+            </div>
+            <Form.Row>
+                <Col>
+                    <Pagination>
+                        {paginationItems}
+                    </Pagination>
+                </Col>
+            </Form.Row>
         </div>
     )
 }
