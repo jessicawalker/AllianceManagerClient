@@ -20,7 +20,6 @@ export default function TrackingSetupList(props) {
         };
 
         fetchData();
-        history.push('/tracking-setup');
 
         return () => {console.log("fetched")}
     }, []);

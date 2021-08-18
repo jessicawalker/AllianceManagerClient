@@ -142,7 +142,7 @@ export default function Activities(props) {
 
     return (
         <div className="navGap">
-        <h2 className="text-center mb-4">Activity Logs</h2>
+            <h2 className="text-center mb-4">Activity Logs</h2>
             <Form inline>
                 <Form.Row className={styles.reportTools}>
                     <Col xs={4}>
@@ -207,7 +207,7 @@ export default function Activities(props) {
                 </Form.Row>
             </Form>
 
-            <Table className="table" striped bordered hover responsive="md">
+            <Table className="`table activitiesTable`" striped bordered hover responsive="md">
                 <thead>
                     <tr>
                         <th scope="col">Date</th>

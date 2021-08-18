@@ -82,11 +82,11 @@ export default function MemberList(props) {
             <Table className="table" striped bordered hover responsive="md">
                 <thead className="thead-dark">
                     <tr>
-                        <th>Username</th>
-                        <th>Role</th>
-                        <th>Notes</th>
-                        <th>Current</th>
-                        <th>Date Added</th>
+                        <th id="memberName">Username</th>
+                        <th id="memberRole">Role</th>
+                        <th id="memberNotes">Notes</th>
+                        <th id="memberCurrent">Current</th>
+                        <th id="memberAdded">Date Added</th>
                         <th colSpan="2"></th>
                     </tr>
                 </thead>

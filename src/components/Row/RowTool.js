@@ -12,8 +12,14 @@ export default function RowTool(props) {
     const [memberNotes, setMemberNotes] = useState(props.memberNotes);
     const [currentMember, setCurrentMember] = useState(props.currentMember);
     const [memberAddedDate, setMemberAddedDate] = useState(props.memberAddedDate);
+    const [enteredUsernameIsValid, setEnteredUsernameIsValid] = useState(false);
+    const [enteredUsernameTouched, setEnteredUsernameTouched] = useState(false);
+
     const [criteriaName, setCriteriaName] = useState(props.criteriaName);
     const [criteriaDatatype, setCriteriaDatatype] = useState(props.criteriaDatatype);
+    const [enteredCriteriaNameIsValid, setEnteredCriteriaNameIsValid] = useState(false);
+    const [enteredCriteriaNameTouched, setEnteredCriteriaNameTouched] = useState(false);
+
     const [entryId, setEntryId] = useState(props.idValue);
     const [dataDisplay, setDataDisplay] = useState(props.dataDisplay);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -50,12 +56,21 @@ export default function RowTool(props) {
     //TODO - show validation feedback
     async function handleClickUpdate(e) {
         e.preventDefault();
-        setRowType("view");
 
         if (dataDisplay === "MemberList") {
             const enteredMemberUsername = memberUsernameRef.current.value;
             const enteredMemberRole = memberRoleRef.current.value;
             const enteredMemberNotes = memberNotesRef.current.value;
+
+            setEnteredUsernameTouched(true);
+
+            if (enteredMemberUsername === "") {
+                setEnteredUsernameIsValid(false);
+                <Form.Text muted>
+                    Member username must not be empty.
+                </Form.Text>
+                return
+            }
 
             setMemberUsername(enteredMemberUsername);
             setMemberRole(enteredMemberRole);
@@ -73,6 +88,16 @@ export default function RowTool(props) {
             if (dataDisplay === "Criteria") {
                 const enteredCriteriaName = criteriaNameRef.current.value;
                 const enteredCriteriaDatatype = criteriaDatatypeRef.current.value;
+            
+                setEnteredCriteriaNameTouched(true);
+
+                if (enteredCriteriaName === "") {
+                    setEnteredCriteriaNameIsValid(false);
+                    <Form.Text muted>
+                        Criteria name must not be empty.
+                    </Form.Text>
+                    return
+                }
 
                 setCriteriaName(enteredCriteriaName);
                 setCriteriaDatatype(enteredCriteriaDatatype);
@@ -84,6 +109,7 @@ export default function RowTool(props) {
                 };
                 await props.onUpdateData(updateCriteriaData);
             }
+            setRowType("view");
     }
 
     async function handleClickAdd(e) {
@@ -119,6 +145,18 @@ export default function RowTool(props) {
         } 
     }
 
+  const usernameInputIsInvalid = !enteredUsernameIsValid && enteredUsernameTouched;
+  const criteriaNameInputIsInvalid = !enteredCriteriaNameIsValid && enteredCriteriaNameTouched;
+
+    /*
+
+  const nameInputClasses = nameInputIsInvalid
+    ? 'form-control invalid'
+    : 'form-control';
+
+     className={nameInputClasses} // goes into input or td tag
+    */
+
     //TODO - check if props.dataDisplay can be changed back to state var with no lag
     return (
 
@@ -135,7 +173,10 @@ export default function RowTool(props) {
                 </td>}
             {props.dataDisplay === "MemberList" && rowType === "edit" &&
                 <td>
-                    <Form.Control type="text" required defaultValue={memberUsername} ref={memberUsernameRef} />
+                    <Form.Control type="text" required defaultValue={memberUsername} ref={memberUsernameRef} isInvalid={usernameInputIsInvalid} />
+                    <Form.Control.Feedback type="invalid">
+                        Member username must not be empty.
+                    </Form.Control.Feedback>
                 </td>}
             {props.dataDisplay === "MemberList" && rowType === "create" &&
                 <td>
@@ -195,7 +236,10 @@ export default function RowTool(props) {
                 </td>}
             {props.dataDisplay === "Criteria" && rowType === "edit" &&
                 <td>
-                    <Form.Control type="text" defaultValue={criteriaName} ref={criteriaNameRef} />
+                    <Form.Control type="text" defaultValue={criteriaName} ref={criteriaNameRef} isInvalid={criteriaNameInputIsInvalid} />
+                    <Form.Control.Feedback type="invalid">
+                        Criteria name must not be empty.
+                    </Form.Control.Feedback>
                 </td>}
             {props.dataDisplay === "Criteria" && rowType === "create" &&
                 <td>

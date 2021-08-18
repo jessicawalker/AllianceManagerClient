@@ -12,12 +12,18 @@ export default function RowAdd(props) {
     let history = useHistory();
 
     const addDataHandler = async (newDataRow) => {
-        setRowType("view");
         if (sectionType === "MemberList") {
             const enteredMemberUsername = newDataRow.member_username;
             const enteredMemberRole = newDataRow.member_role;
             const enteredMemberNotes = newDataRow.member_notes;
             const enteredCurrentMember = newDataRow.current_member;
+
+            if (enteredMemberUsername === "") {
+                <Form.Text muted>
+                    Member username must not be empty.
+                </Form.Text>
+                return
+            }
 
             await axios.post('/members-add', {
                 member_username: enteredMemberUsername,
@@ -36,6 +42,13 @@ export default function RowAdd(props) {
         if (sectionType === "Criteria") {
             const enteredCriteriaName = newDataRow.criteria_name;
             const enteredCriteriaDatatype = newDataRow.criteria_datatype;
+
+            if (enteredCriteriaName === "") {
+                <Form.Text muted>
+                    Criteria name must not be empty.
+                </Form.Text>
+                return
+            }
 
             await axios.post('/trackingcriteria-add', {
                 criteria_name: enteredCriteriaName,
