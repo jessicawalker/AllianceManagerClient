@@ -21,6 +21,8 @@ export default function Activities(props) {
     const [searchDate, setSearchDate] = useState("");  // get date for filter
     const [sortBy, setSortBy] = useState("");  // get date for filter
     const [searchParams, setSearchParams] = useState([]);  // get custom params
+    const [viewMember, setViewMember] = useState(false);  //display username as heading
+    const [viewDate, setViewDate] = useState(false);  // display date as heading
     //const [filterKey, setFilterKey] = useState("");  // master array each user
     //const [filterReturnValue, setFilterValue] = useState("");  // master array each user
     let history = useHistory();
@@ -91,14 +93,22 @@ export default function Activities(props) {
 
         if (filterField === "user") {
             setSearchMember(filterValue);
+            setViewMember(true);
+            if (filterValue === "") setViewMember(false);
         }
         else if (filterField === "date") {
             setSearchDate(filterValue);
+            setViewDate(true);
+            if (filterValue === "") setViewDate(false);
         }
         else if (filterField === "sort") {
+            setViewDate(false);
+            setViewMember(false);
             setSortBy(filterValue);
         }
         else {
+            setViewDate(false);
+            setViewMember(false);
             setSearchParams(`${filterField}: ${filterValue}`); console.log(filterField + ": " + filterValue)
         }
     }
@@ -118,6 +128,8 @@ export default function Activities(props) {
                     disabled={(paginationPage <= 1) || paginationLimit === ""}
                     onClick={(e) => setPaginationPage(prevPage => prevPage - 1)}
                 />);
+
+                // <Pagination.Ellipsis />
 
             for (let number = 1; number <= Math.ceil(paginationLength / paginationLimit); number++) {
                 paginationItems.push(
@@ -208,11 +220,15 @@ export default function Activities(props) {
                 </Form.Row>
             </Form>
             <div className={styles.activitiesTable}>
+
+                {viewMember && <h4 className="text-center mb-4 mt-4">{searchMember}</h4>}
+                {viewDate && <h4 className="text-center mb-4 mt-4">{searchDate}</h4>}
+
                 <Table className="table" striped bordered hover responsive="md">
                     <thead>
                         <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">User</th>
+                            {!viewDate && <th scope="col">Date</th>}
+                            {!viewMember && <th scope="col">User</th>}
                             {criteriaData.map((criteria) => (
                                 <th scope="col" key={uuidv4()}>{criteria.criteria_name}</th>
                             ))}
@@ -223,20 +239,20 @@ export default function Activities(props) {
                         {memberActivityData
                             .map((data) => (
                                 <tr key={uuidv4()}>
-                                    <TrackingCellView
+                                    {!viewDate && <TrackingCellView
                                         key={uuidv4()}
                                         idValue={data._id}
                                         field="date"
                                         value={data.date}
                                         criteria_datatype="Date"
-                                    />
-                                    <TrackingCellView
+                                    />}
+                                    {!viewMember && <TrackingCellView
                                         key={uuidv4()}
                                         idValue={data._id}
                                         field="user"
                                         value={data.user}
                                         criteria_datatype="String"
-                                    />
+                                    />}
 
                                     {criteriaData.map((criteria) => (
                                         <TrackingCellView
