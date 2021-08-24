@@ -1,11 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Form, Button, Alert } from "react-bootstrap";
 import FloatingLabel from "react-bootstrap-floating-label";
 import { useHistory } from 'react-router-dom';
 import DeleteModal from '../DeleteModal';
+import axios from "../../axios";
 import styles from './Row.module.css';
 
 export default function RowTool(props) {
+    // this component represents one row, which can be reused to create a full table
     const [rowType, setRowType] = useState(props.crudState);       // types: view, edit, create, delete
     const [memberUsername, setMemberUsername] = useState(props.username);
     const [memberRole, setMemberRole] = useState(props.memberRole);
@@ -36,6 +38,7 @@ export default function RowTool(props) {
     // tracking criteria
     const criteriaNameRef = useRef();
     const criteriaDatatypeRef = useRef();
+    
 
     // Cancel
     async function handleClickCancel(e) {
@@ -66,9 +69,6 @@ export default function RowTool(props) {
 
             if (enteredMemberUsername === "") {
                 setEnteredUsernameIsValid(false);
-                <Form.Text muted>
-                    Member username must not be empty.
-                </Form.Text>
                 return
             }
 
@@ -88,7 +88,7 @@ export default function RowTool(props) {
             if (dataDisplay === "Criteria") {
                 const enteredCriteriaName = criteriaNameRef.current.value;
                 const enteredCriteriaDatatype = criteriaDatatypeRef.current.value;
-            
+
                 setEnteredCriteriaNameTouched(true);
 
                 if (enteredCriteriaName === "") {
@@ -109,14 +109,20 @@ export default function RowTool(props) {
                 };
                 await props.onUpdateData(updateCriteriaData);
             }
-            setRowType("view");
+        setRowType("view");
     }
 
-    async function handleClickAdd(e) {
+    function handleClickAdd(e) {
         e.preventDefault();
-        setRowType("view");
 
         if (dataDisplay === "MemberList") {
+
+            setEnteredUsernameTouched(true);
+
+            if (memberUsername === "") {
+                setEnteredUsernameIsValid(false);
+                return
+            }
 
             const newMemberData = {
                 member_username: memberUsername,
@@ -125,16 +131,17 @@ export default function RowTool(props) {
                 current_member: currentMember
             };
 
-            await props.onSaveData(newMemberData);
-        } else
-            if (dataDisplay === "Criteria") {
+            props.onSaveData(newMemberData);
+        } 
+        else if (dataDisplay === "Criteria") {
 
-                const newCriteriaData = {
-                    criteria_name: criteriaName,
-                    criteria_datatype: criteriaDatatype
-                };
-                await props.onSaveData(newCriteriaData);
-            }
+            const newCriteriaData = {
+                criteria_name: criteriaName,
+                criteria_datatype: criteriaDatatype
+            };
+            props.onSaveData(newCriteriaData);
+        };
+
     }
 
     function handleClickDelete(willDelete) {
@@ -142,31 +149,22 @@ export default function RowTool(props) {
             props.onDeleteData(entryId);
         } else {
             setShowDeleteModal(true); // show delete modal
-        } 
+        }
     }
 
-  const usernameInputIsInvalid = !enteredUsernameIsValid && enteredUsernameTouched;
-  const criteriaNameInputIsInvalid = !enteredCriteriaNameIsValid && enteredCriteriaNameTouched;
-
-    /*
-
-  const nameInputClasses = nameInputIsInvalid
-    ? 'form-control invalid'
-    : 'form-control';
-
-     className={nameInputClasses} // goes into input or td tag
-    */
+    const usernameInputIsInvalid = !enteredUsernameIsValid && enteredUsernameTouched;
+    const criteriaNameInputIsInvalid = !enteredCriteriaNameIsValid && enteredCriteriaNameTouched;
 
     //TODO - check if props.dataDisplay can be changed back to state var with no lag
     return (
 
         <tr className="align-middle border-top border-bottom">
-        <DeleteModal
-            show={showDeleteModal}
-            animation={false}
-            onHide={() => setShowDeleteModal(false)}
-            onDelete={() => {handleClickDelete(true); setShowDeleteModal(false);}}
-        />
+            <DeleteModal
+                show={showDeleteModal}
+                animation={false}
+                onHide={() => setShowDeleteModal(false)}
+                onDelete={() => { handleClickDelete(true); setShowDeleteModal(false); }}
+            />
             {props.dataDisplay === "MemberList" && rowType === "view" &&
                 <td>
                     <Form.Control plaintext readOnly defaultValue={memberUsername} />
@@ -180,7 +178,10 @@ export default function RowTool(props) {
                 </td>}
             {props.dataDisplay === "MemberList" && rowType === "create" &&
                 <td>
-                    <FloatingLabel type="text" id="floatingMemberUsername" label="Username" onChange={(e) => setMemberUsername(e.target.value)} />
+                    <FloatingLabel type="text" id="floatingMemberUsername" label="Username" onChange={(e) => setMemberUsername(e.target.value)} isInvalid={usernameInputIsInvalid} />
+                    <Form.Control.Feedback type="invalid">
+                        Member username must not be empty.
+                    </Form.Control.Feedback>
                 </td>}
 
             {props.dataDisplay === "MemberList" && rowType === "view" &&

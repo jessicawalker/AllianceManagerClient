@@ -12,33 +12,10 @@ export default function RowAdd(props) {
     let history = useHistory();
 
     const addDataHandler = async (newDataRow) => {
-        if (sectionType === "MemberList") {
-            const enteredMemberUsername = newDataRow.member_username;
-            const enteredMemberRole = newDataRow.member_role;
-            const enteredMemberNotes = newDataRow.member_notes;
-            const enteredCurrentMember = newDataRow.current_member;
 
-            if (enteredMemberUsername === "") {
-                <Form.Text muted>
-                    Member username must not be empty.
-                </Form.Text>
-                return
-            }
+        setRowType("view");
+        props.onAddData(newDataRow);
 
-            await axios.post('/members-add', {
-                member_username: enteredMemberUsername,
-                member_role: enteredMemberRole,
-                member_notes: enteredMemberNotes,
-                current_member: enteredCurrentMember
-            })
-                .then(function (response) {
-                    console.log(response);
-                    setRowType("view");
-                })
-                .catch(function (error) {
-                    console.log(error.response.data);
-                });
-        } else
         if (sectionType === "Criteria") {
             const enteredCriteriaName = newDataRow.criteria_name;
             const enteredCriteriaDatatype = newDataRow.criteria_datatype;
@@ -56,18 +33,19 @@ export default function RowAdd(props) {
             })
                 .then(function (response) {
                     console.log(response);
-                    setRowType("view");
+                    //setRowType("view");
                 })
                 .catch(function (error) {
                     console.log(error.response.data);
                 });
         }
+        //await setRowType("view");
     }
 
     // Cancel Add
     async function handleClickCancel(e) {
         e.preventDefault();
-        setRowType("");
+        setRowType("view");
 
         if (sectionType==="MemberList"){
             history.push('/members');
