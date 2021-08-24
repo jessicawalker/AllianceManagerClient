@@ -38,7 +38,7 @@ export default function RowTool(props) {
     // tracking criteria
     const criteriaNameRef = useRef();
     const criteriaDatatypeRef = useRef();
-    
+
 
     // Cancel
     async function handleClickCancel(e) {
@@ -46,17 +46,16 @@ export default function RowTool(props) {
         if (rowType === "create") {
             setRowType("view");
         } else
-        if (rowType === "edit" && dataDisplay === "MemberList") {
-            setRowType("view");
-            history.push('/members');
-        } else
-        if (rowType === "edit" && dataDisplay === "Criteria") {
-            setRowType("view");
-            history.push('/tracking-setup');
-        }
+            if (rowType === "edit" && dataDisplay === "MemberList") {
+                setRowType("view");
+                history.push('/members');
+            } else
+                if (rowType === "edit" && dataDisplay === "Criteria") {
+                    setRowType("view");
+                    history.push('/tracking-setup');
+                }
     }
 
-    //TODO - show validation feedback
     async function handleClickUpdate(e) {
         e.preventDefault();
 
@@ -93,9 +92,6 @@ export default function RowTool(props) {
 
                 if (enteredCriteriaName === "") {
                     setEnteredCriteriaNameIsValid(false);
-                    <Form.Text muted>
-                        Criteria name must not be empty.
-                    </Form.Text>
                     return
                 }
 
@@ -116,7 +112,6 @@ export default function RowTool(props) {
         e.preventDefault();
 
         if (dataDisplay === "MemberList") {
-
             setEnteredUsernameTouched(true);
 
             if (memberUsername === "") {
@@ -132,8 +127,14 @@ export default function RowTool(props) {
             };
 
             props.onSaveData(newMemberData);
-        } 
+        }
         else if (dataDisplay === "Criteria") {
+            setEnteredCriteriaNameTouched(true);
+
+            if (criteriaName === "") {
+                setEnteredCriteriaNameIsValid(false);
+                return
+            }
 
             const newCriteriaData = {
                 criteria_name: criteriaName,
@@ -244,7 +245,10 @@ export default function RowTool(props) {
                 </td>}
             {props.dataDisplay === "Criteria" && rowType === "create" &&
                 <td>
-                    <FloatingLabel type="text" id="floatingCriteriaName" label="Criteria Name" onChange={(e) => setCriteriaName(e.target.value)} />
+                    <FloatingLabel type="text" id="floatingCriteriaName" label="Criteria Name" onChange={(e) => setCriteriaName(e.target.value)} isInvalid={criteriaNameInputIsInvalid} />
+                    <Form.Control.Feedback type="invalid">
+                        Criteria name must not be empty.
+                    </Form.Control.Feedback>
                 </td>}
 
             {props.dataDisplay === "Criteria" && rowType === "view" &&

@@ -11,38 +11,13 @@ export default function RowAdd(props) {
     const [sectionName, setSectionName] = useState(props.addType);
     let history = useHistory();
 
+    // Removes add item form, sends data up to be processed
     const addDataHandler = async (newDataRow) => {
-
         setRowType("view");
         props.onAddData(newDataRow);
-
-        if (sectionType === "Criteria") {
-            const enteredCriteriaName = newDataRow.criteria_name;
-            const enteredCriteriaDatatype = newDataRow.criteria_datatype;
-
-            if (enteredCriteriaName === "") {
-                <Form.Text muted>
-                    Criteria name must not be empty.
-                </Form.Text>
-                return
-            }
-
-            await axios.post('/trackingcriteria-add', {
-                criteria_name: enteredCriteriaName,
-                criteria_datatype: enteredCriteriaDatatype
-            })
-                .then(function (response) {
-                    console.log(response);
-                    //setRowType("view");
-                })
-                .catch(function (error) {
-                    console.log(error.response.data);
-                });
-        }
-        //await setRowType("view");
     }
 
-    // Cancel Add
+    // Cancel add
     async function handleClickCancel(e) {
         e.preventDefault();
         setRowType("view");
@@ -55,6 +30,7 @@ export default function RowAdd(props) {
         }
     }
 
+    // Show add item form
     async function handleSubmit(e) {
         e.preventDefault();
         setSectionType(sectionType);
