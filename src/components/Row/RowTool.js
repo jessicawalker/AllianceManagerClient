@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Form, Button, Alert } from "react-bootstrap";
 import FloatingLabel from "react-bootstrap-floating-label";
 import { useHistory } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import DeleteModal from '../DeleteModal';
 import axios from "../../axios";
 import styles from './Row.module.css';
@@ -26,6 +27,7 @@ export default function RowTool(props) {
     const [dataDisplay, setDataDisplay] = useState(props.dataDisplay);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     let history = useHistory();
+    const { currentUser } = useAuth();
     const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
 
     // members
@@ -156,7 +158,6 @@ export default function RowTool(props) {
     const usernameInputIsInvalid = !enteredUsernameIsValid && enteredUsernameTouched;
     const criteriaNameInputIsInvalid = !enteredCriteriaNameIsValid && enteredCriteriaNameTouched;
 
-    //TODO - check if props.dataDisplay can be changed back to state var with no lag
     return (
 
         <tr className="align-middle border-top border-bottom">
@@ -170,14 +171,14 @@ export default function RowTool(props) {
                 <td>
                     <Form.Control plaintext readOnly defaultValue={memberUsername} />
                 </td>}
-            {props.dataDisplay === "MemberList" && rowType === "edit" &&
+            {props.dataDisplay === "MemberList" && rowType === "edit" && currentUser &&
                 <td>
                     <Form.Control type="text" required defaultValue={memberUsername} ref={memberUsernameRef} isInvalid={usernameInputIsInvalid} />
                     <Form.Control.Feedback type="invalid">
                         Member username must not be empty.
                     </Form.Control.Feedback>
                 </td>}
-            {props.dataDisplay === "MemberList" && rowType === "create" &&
+            {props.dataDisplay === "MemberList" && rowType === "create" && currentUser &&
                 <td>
                     <FloatingLabel type="text" id="floatingMemberUsername" label="Username" onChange={(e) => setMemberUsername(e.target.value)} isInvalid={usernameInputIsInvalid} />
                     <Form.Control.Feedback type="invalid">
@@ -189,11 +190,11 @@ export default function RowTool(props) {
                 <td>
                     <Form.Control plaintext readOnly defaultValue={memberRole} />
                 </td>}
-            {props.dataDisplay === "MemberList" && rowType === "edit" &&
+            {props.dataDisplay === "MemberList" && rowType === "edit" && currentUser &&
                 <td>
                     <Form.Control type="text" defaultValue={memberRole} ref={memberRoleRef} />
                 </td>}
-            {props.dataDisplay === "MemberList" && rowType === "create" &&
+            {props.dataDisplay === "MemberList" && rowType === "create" && currentUser &&
                 <td>
                     <FloatingLabel type="text" id="floatingMemberRole" label="Role" onChange={(e) => setMemberRole(e.target.value)} />
                 </td>}
@@ -201,10 +202,10 @@ export default function RowTool(props) {
             {props.dataDisplay === "MemberList" && rowType === "view" &&
                 <td>
                     <Form.Control plaintext readOnly defaultValue={memberNotes} /></td>}
-            {props.dataDisplay === "MemberList" && rowType === "edit" &&
+            {props.dataDisplay === "MemberList" && rowType === "edit" && currentUser &&
                 <td>
                     <Form.Control type="text" defaultValue={memberNotes} ref={memberNotesRef} /></td>}
-            {props.dataDisplay === "MemberList" && rowType === "create" &&
+            {props.dataDisplay === "MemberList" && rowType === "create" && currentUser &&
                 <td>
                     <FloatingLabel type="text" id="floatingMemberNotes" label="Notes" onChange={(e) => setMemberNotes(e.target.value)} />
                 </td>}
@@ -213,11 +214,11 @@ export default function RowTool(props) {
                 <td>
                     <Form.Control plaintext readOnly defaultValue={currentMember ? "Yes" : "No"} />
                 </td>}
-            {props.dataDisplay === "MemberList" && rowType === "edit" &&
+            {props.dataDisplay === "MemberList" && rowType === "edit" && currentUser &&
                 <td>
                     <Form.Check inline id="edit-current" label="Current" checked={currentMember} onChange={() => setCurrentMember(!currentMember)} ref={currentMemberRef} />
                 </td>}
-            {props.dataDisplay === "MemberList" && rowType === "create" &&
+            {props.dataDisplay === "MemberList" && rowType === "create" && currentUser &&
                 <td>
                     <Form.Check id="create-current" label="Current" defaultChecked={currentMember} onChange={() => setCurrentMember(!currentMember)} />
                 </td>}
@@ -226,7 +227,7 @@ export default function RowTool(props) {
                 <td>
                     <Form.Control plaintext readOnly defaultValue={new Date(memberAddedDate).toLocaleDateString('en-US', displayDate)} />
                 </td>}
-            {props.dataDisplay === "MemberList" && rowType === "edit" &&
+            {props.dataDisplay === "MemberList" && rowType === "edit" && currentUser &&
                 <td>
                     <Form.Control plaintext readOnly defaultValue={new Date(memberAddedDate).toLocaleDateString('en-US', displayDate)} ref={memberAddedDateRef} />
                 </td>}
@@ -257,8 +258,8 @@ export default function RowTool(props) {
                 </td>}
             {props.dataDisplay === "Criteria" && rowType === "edit" &&
                 <td><Form.Control as="select" ref={criteriaDatatypeRef} defaultValue={criteriaDatatype}>
-                    <option>Boolean</option>
-                    <option>String</option>
+                    <option>Yes/No</option>
+                    <option>Text</option>
                     <option>Number</option>
                     <option>Date</option>
                 </Form.Control></td>}
@@ -271,31 +272,31 @@ export default function RowTool(props) {
                     <option>Date</option>
                 </Form.Control></td>}
 
-            {rowType === "view" &&
+            {rowType === "view" && currentUser &&
                 <td className="text-center">
                     <Button onClick={() => setRowType("edit")}>Edit</Button>
                 </td>}
-            {rowType === "edit" &&
+            {rowType === "edit" && currentUser &&
                 <td className="text-center">
                     <Button type="submit" onClick={handleClickUpdate}>Save</Button>
                 </td>}
 
-            {rowType === "view" &&
+            {rowType === "view" && currentUser &&
                 <td className="text-center">
                     <Button variant="danger" onClick={handleClickDelete}>Delete</Button>
                 </td>}
 
-            {rowType === "create" &&
+            {rowType === "create" && currentUser &&
                 <td className="text-center">
                     <Button type="submit" onClick={handleClickAdd}>Add</Button>
                 </td>}
 
-            {rowType === "create" &&
+            {rowType === "create" && currentUser &&
                 <td className="text-center">
                     <Button type="submit" variant="danger" onClick={props.onCancelData}>Cancel</Button>
                 </td>}
 
-            {rowType === "edit" &&
+            {rowType === "edit" && currentUser &&
                 <td className="text-center">
                     <Button type="submit" variant="danger" onClick={handleClickCancel}>Cancel</Button>
                 </td>}

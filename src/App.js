@@ -18,6 +18,8 @@ import Tracking from "./components/Activity/Tracking";
 import './styles.css';
 
 function App() {
+// TODO - separate out and protect data based on user account
+// TODO - add user accounts that can share the same alliance data
     return (
         <Container
           className="d-flex align-items-center justify-content-center"
@@ -32,10 +34,11 @@ function App() {
                             <PrivateRoute exact path="/" component={Dashboard} />
                             <PrivateRoute path="/update-profile" component={UpdateProfile} />
                             <PrivateRoute path="/alliance-info" component={AllianceInfo} />
-                            <PrivateRoute path="/members" component={Members} />
+                            <Route path="/members" component={Members} />
                             <PrivateRoute path="/tracking-setup" component={TrackingSetup} />
                             <PrivateRoute path="/tracking" component={Tracking} />
-                            <PrivateRoute path="/activities" component={Activities} />
+                            { /* <PrivateRoute path="/activities" component={Activities} /> */ }
+                            <Route path="/activities" component={Activities} />
                             <Route path="/signup" component={Signup} />
                             <Route path="/login" component={Login} />
                             <Route path="/forgot-password" component={ForgotPassword} />

@@ -8,6 +8,7 @@ import styles from './Auth.module.css';
 export default function AllianceInfo() {
 
     const [allianceData, setAllianceData] = useState({});
+    const [error, setError] = useState('');
     const allianceNameRef = useRef();
     const gameNameRef = useRef();
     const labelStyle = {
@@ -41,8 +42,9 @@ export default function AllianceInfo() {
         const currentId = allianceData._id;
 
         if (enteredAllianceName === "" || enteredGameName === "") {
-            return;
+            return setError('All fields must be filled in.');
         }
+        setError('');
         
         if (currentId === "") {  // new entry
             await axios.post('/allianceprofile-add', {
@@ -51,6 +53,7 @@ export default function AllianceInfo() {
             })
                 .then(function (response) {
                     console.log(response);
+                    setError("Failed to add your information.");
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -65,6 +68,7 @@ export default function AllianceInfo() {
                 })
                 .catch(function (error) {
                     console.log(error);
+                    setError("Failed to update your information.");
                 });
         }
 
@@ -78,6 +82,7 @@ export default function AllianceInfo() {
                 <Card>
                     <Card.Body>
                         <h2 className="text-center mb-4">Update Alliance</h2>
+                        { error && <Alert variant="danger">{ error }</Alert>}
                         <Form onSubmit={handleSubmit}>
                             <Form.Group id="allianceName">
                                 <Form.Label className={styles.labelStyle}>Alliance Name</Form.Label>

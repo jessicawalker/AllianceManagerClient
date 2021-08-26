@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import MemberList from './MemberList';
 import RowAdd from '../Row/RowAdd';
 import axios from "../../axios";
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './Members.module.css'; 
 
-export default function Members() {
-    //TODO - make members list viewable but not editable for anonymous users
-    
+export default function Members() {    
     const [memberData, setMemberData] = useState([{}]);    // collects all member data
+    const { currentUser } = useAuth();
 
     // read member data
     useEffect(() => {
@@ -112,11 +112,11 @@ export default function Members() {
                 allData={memberData}
                 onUpdateData={updateDataHandler}
                 onDeleteData={deleteDataHandler} />
-            <RowAdd 
+            {currentUser && <RowAdd 
                 addType="Member" 
                 dataDisplay="MemberList" 
                 crudState="view"
-                onAddData={addDataHandler} />
+                onAddData={addDataHandler} />}
         </div>
     )
 }

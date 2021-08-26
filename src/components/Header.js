@@ -34,21 +34,26 @@ export default function Header() {
                     <Nav className="me-auto">
                         <Nav.Link href="/activities">Activity Logs</Nav.Link>
                         <Nav.Link href="/members">Members</Nav.Link>
-                        <NavDropdown title="Settings" id="collasible-nav-dropdown">
+                        {currentUser && <NavDropdown title="Settings" id="collasible-nav-dropdown">
                             <NavDropdown.Item href="/tracking-setup">Tracking Setup</NavDropdown.Item>
                             <NavDropdown.Divider />
                             <NavDropdown.Item href="/alliance-info">Alliance Profile</NavDropdown.Item>
                             <NavDropdown.Item href="/update-profile">Account Profile</NavDropdown.Item>
-                        </NavDropdown>
+                        </NavDropdown>}
                     </Nav>
-                    <Nav className="justify-content-end">
+                    {currentUser && <Nav className="justify-content-end">
                         <Nav.Link href="/tracking">
                             <Button variant="primary" style={dashBtnStyle}>Add New Activity</Button>
                         </Nav.Link>
                         <Nav.Link>
                             <Button onClick={handleLogout}>Log Out</Button>
                         </Nav.Link>
-                    </Nav>
+                    </Nav>}
+                    {!currentUser && <Nav className="justify-content-end">
+                        <Nav.Link href="/signup">
+                            <Button variant="primary" style={dashBtnStyle}>Sign Up</Button>
+                        </Nav.Link>
+                    </Nav>}
                 </Navbar.Collapse>
                 </Container>
             </Navbar>

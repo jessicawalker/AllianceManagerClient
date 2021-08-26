@@ -2,9 +2,11 @@ import React from 'react';
 import { Table, Form } from "react-bootstrap";
 import RowTool from '../Row/RowTool';
 import { v4 as uuidv4 } from 'uuid';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './Members.module.css'; 
 
 export default function MemberList(props) {
+    const { currentUser } = useAuth();
 
     return (
         <Form>
@@ -16,7 +18,7 @@ export default function MemberList(props) {
                         <th id="memberNotes">Notes</th>
                         <th id="memberCurrent">Current</th>
                         <th id="memberAdded" className={styles.dateColumn}>Date Added</th>
-                        <th colSpan="2"></th>
+                        {currentUser && <th colSpan="2"></th>}
                     </tr>
                 </thead>
                 <tbody>
