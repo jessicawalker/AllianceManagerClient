@@ -266,8 +266,8 @@ export default function RowTool(props) {
 
             {props.dataDisplay === "Criteria" && rowType === "create" &&
                 <td><Form.Control as="select" onChange={(e) => setCriteriaDatatype(e.target.value)}>
-                    <option>Boolean</option>
-                    <option>String</option>
+                    <option>Yes/No</option>
+                    <option>Text</option>
                     <option>Number</option>
                     <option>Date</option>
                 </Form.Control></td>}
