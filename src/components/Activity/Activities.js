@@ -26,8 +26,13 @@ export default function Activities(props) {
     //const [filterKey, setFilterKey] = useState("");  // master array each user
     //const [filterReturnValue, setFilterValue] = useState("");  // master array each user
     let history = useHistory();
+    const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
+
+    //TODO - move date display format somewhere so that it only is defined in one location
 
     //if (props.saveDataBtn) setSearchDate(new Date(props.saveDataDate).toISOString());
+
+    //TODO - Give option to view different types of reports, not just the one default
 
 
     // read current member data
@@ -102,20 +107,20 @@ export default function Activities(props) {
             if (filterValue === "") setViewDate(false);
         }
         else if (filterField === "sort") {
-            setViewDate(false);
-            setViewMember(false);
             setSortBy(filterValue);
         }
         else {
             setViewDate(false);
             setViewMember(false);
-            setSearchParams(`${filterField}: ${filterValue}`); console.log(filterField + ": " + filterValue)
+            setSearchParams(`${filterField}: ${filterValue}`); 
+            console.log(filterField + ": " + filterValue)
         }
     }
 
     // auto-generate pagination numbered items
     let paginationItems = [];
     const showPagination = () => {
+        const NEIGHBOR_COUNT = 2;
 
         // avoid infinite loop caused by for loop's increment when "Show All"
         if (paginationLimit !== "") {
@@ -129,9 +134,22 @@ export default function Activities(props) {
                     onClick={(e) => setPaginationPage(prevPage => prevPage - 1)}
                 />);
 
-                // <Pagination.Ellipsis />
-
             for (let number = 1; number <= Math.ceil(paginationLength / paginationLimit); number++) {
+
+                // show first page and show up to 2 pages left of active page
+                if (number !== 1 && number < paginationPage - NEIGHBOR_COUNT ) {
+                    paginationItems.push(<Pagination.Ellipsis />);
+                    number = paginationPage - NEIGHBOR_COUNT;
+                    continue;
+                } 
+                
+                //  show up to 2 pages right of active page and show last page
+                else if (number > paginationPage + NEIGHBOR_COUNT && number < Math.ceil(paginationLength / paginationLimit)) {
+                    paginationItems.push(<Pagination.Ellipsis />);
+                    number = Math.ceil(paginationLength / paginationLimit) - 1;
+                    continue;
+                }
+
                 paginationItems.push(
                     <Pagination.Item
                         key={number}
@@ -222,7 +240,7 @@ export default function Activities(props) {
             <div className={styles.activitiesTable}>
 
                 {viewMember && <h4 className="text-center mb-4 mt-4">{searchMember}</h4>}
-                {viewDate && <h4 className="text-center mb-4 mt-4">{searchDate}</h4>}
+                {viewDate && <h4 className="text-center mb-4 mt-4">{new Date(searchDate).toLocaleDateString('en-US', displayDate)}</h4>}
 
                 <Table className="table" striped bordered hover responsive="md">
                     <thead>
