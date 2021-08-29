@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Table, Pagination, Alert } from "react-bootstrap";
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { Form, Table, Pagination, Card, Accordion, Col, Row, Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import axios from "../../axios";
 import TrackingCellView from "./TrackingCellView";
@@ -32,7 +30,7 @@ export default function Activities(props) {
 
     //if (props.saveDataBtn) setSearchDate(new Date(props.saveDataDate).toISOString());
 
-    //TODO - Give option to view different types of reports, not just the one default
+    //TODO - give option to view different types of reports, not just the one default
 
 
     // read current member data
@@ -87,6 +85,7 @@ export default function Activities(props) {
                 params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy }
             }
             );
+            // TODO - pass in custom fields filter ability
             setActivityData(result.data.results);
             setPaginationLength(result.data.total);
         };
@@ -112,7 +111,7 @@ export default function Activities(props) {
         else {
             setViewDate(false);
             setViewMember(false);
-            setSearchParams(`${filterField}: ${filterValue}`); 
+            setSearchParams(`${filterField}: ${filterValue}`);
             console.log(filterField + ": " + filterValue)
         }
     }
@@ -120,7 +119,7 @@ export default function Activities(props) {
     // auto-generate pagination numbered items
     let paginationItems = [];
     const showPagination = () => {
-        const NEIGHBOR_COUNT = 2;
+        const NEIGHBOR_COUNT = 1;
 
         // avoid infinite loop caused by for loop's increment when "Show All"
         if (paginationLimit !== "") {
@@ -137,12 +136,12 @@ export default function Activities(props) {
             for (let number = 1; number <= Math.ceil(paginationLength / paginationLimit); number++) {
 
                 // show first page and show up to 2 pages left of active page
-                if (number !== 1 && number < paginationPage - NEIGHBOR_COUNT ) {
+                if (number !== 1 && number < paginationPage - NEIGHBOR_COUNT) {
                     paginationItems.push(<Pagination.Ellipsis />);
-                    number = paginationPage - NEIGHBOR_COUNT;
+                    number = paginationPage - NEIGHBOR_COUNT - 1;
                     continue;
-                } 
-                
+                }
+
                 //  show up to 2 pages right of active page and show last page
                 else if (number > paginationPage + NEIGHBOR_COUNT && number < Math.ceil(paginationLength / paginationLimit)) {
                     paginationItems.push(<Pagination.Ellipsis />);
@@ -203,22 +202,34 @@ export default function Activities(props) {
                     </Col>
                 </Form.Row>
 
-                {/*
-                <Form.Group className={styles.secondaryFilter}>
-                    <Form.Row>
-                        {criteriaData.map((criteria) => (
-                            <FilterData
-                                key={uuidv4()}
-                                idValue={criteria._id}
-                                filterName={criteria.criteria_name}
-                                field={criteria.criteria_key}
-                                criteria_datatype={criteria.criteria_datatype}
-                                filterValues={getSearchParams}
-                            />
-                        ))}
-                    </Form.Row>
-                </Form.Group>
-*/}
+                <Accordion className={styles.secondaryFilterContainer}>
+                    <Card>
+                        <Accordion.Toggle as={Card.Header} variant="link" eventKey="0" className={styles.secondaryFilterHeader}>
+                            View More Options
+                        </Accordion.Toggle>
+                        <Accordion.Collapse eventKey="0">
+                            <Card.Body>
+                                <Form.Group>
+                                    <Form.Row className={styles.secondaryFilter}>
+                                        {criteriaData.map((criteria) => (
+                                            <Col xs={2}>
+                                                <FilterData
+                                                    key={uuidv4()}
+                                                    idValue={criteria._id}
+                                                    filterName={criteria.criteria_name}
+                                                    field={criteria.criteria_key}
+                                                    criteria_datatype={criteria.criteria_datatype}
+                                                    filterValues={getSearchParams}
+                                                />
+                                            </Col>
+                                        ))}
+                                    </Form.Row>
+                                </Form.Group>
+                            </Card.Body>
+                        </Accordion.Collapse>
+                    </Card>
+                </Accordion>
+
 
                 <Form.Row className={styles.reportTools}>
                     <Col xs lg="2">

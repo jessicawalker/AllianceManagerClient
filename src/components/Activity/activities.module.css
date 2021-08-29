@@ -55,19 +55,30 @@ table {
     position: sticky;
 }
 
-.reportTools {
+.reportTools,
+.secondaryFilter {
     display: flex;
 }
 
-.reportTools+.reportTools>div {
+.reportTools+.reportTools>div,
+.secondaryFilter+.secondaryFilter>div {
     padding-bottom: 0;
 }
 
-.reportTools>div {
+.reportTools>div,
+.secondaryFilter>div {
     padding: 0 2em 2em 0;
 }
 
-.reportTools span.sr-only {
+.secondaryFilterContainer {
+    margin-bottom: 2.5em;
+}
+
+.secondaryFilterHeader:hover {
+    cursor: pointer;
+}
+
+span.sr-only {
     display: none;
     visibility: hidden;
     z-index: -999;
