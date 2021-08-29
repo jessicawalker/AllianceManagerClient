@@ -233,6 +233,7 @@ export default function Activities(props) {
 
                 <Form.Row className={styles.reportTools}>
                     <Col xs lg="2">
+                        <Form.Label>Show: </Form.Label>
                         <Form.Control className="mb-2 mr-sm-2" as="select" name="paginationOptions" onChange={(e) => setPaginationLimit(e.target.value)}>
                             <option>20</option>
                             <option>50</option>
@@ -242,6 +243,7 @@ export default function Activities(props) {
                         </Form.Control>
                     </Col>
                     <Col>
+                            <Form.Label>{paginationLength} Items: </Form.Label>
                         <Pagination>
                             {paginationItems}
                         </Pagination>

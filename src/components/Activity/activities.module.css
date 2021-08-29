@@ -58,6 +58,8 @@ table {
 .reportTools,
 .secondaryFilter {
     display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .reportTools+.reportTools>div,
@@ -65,17 +67,28 @@ table {
     padding-bottom: 0;
 }
 
-.reportTools>div,
-.secondaryFilter>div {
+.reportTools>div {
+    align-self: baseline;
     padding: 0 2em 2em 0;
 }
 
 .secondaryFilterContainer {
+    /*
+    align-self: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;*/
     margin-bottom: 2.5em;
 }
 
 .secondaryFilterHeader:hover {
     cursor: pointer;
+}
+
+.secondaryFilter>div {
+    align-self: center;
+    padding-right: 2em;
+    justify-content: space-evenly;
 }
 
 span.sr-only {
