@@ -9,6 +9,7 @@ import styles from './activities.module.css';
 
 export default function FilterData(props) {
     const [showCurrentMembers, setShowCurrentMembers] = useState(true);    // all members option
+    const [showReverseSort, setShowReverseSort] = useState(false);    // all members option
     const [fieldLabel, setFieldLabel] = useState(props.filterName); // label name of field
     const [fieldName, setFieldName] = useState(props.field); // key name of field
     const [dataType, setDataType] = useState(props.criteria_datatype); // datatype of field
@@ -23,31 +24,25 @@ export default function FilterData(props) {
     // read all user data, filter for field's unique values
     useEffect(() => {
         const fetchData = async () => {
-            if (fieldName !== "user") {
-                await axios.get('/userdata-unique', {
-                    params: { unique: fieldName }
-                })
-                    .then(function (response) {
-                        console.log(response);
-                        setUniqueValues(response.data.results);
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
+            if (props.field !== "user") {
+                const result = await axios.get('/userdata-unique', {
+                    params: { unique: props.field }
+                });
+                setUniqueValues(result.data.results);
             }
         };
 
         fetchData();
         return () => {
-            console.log("unsub userdata-unique");
+            console.log("=========== FilterData.js ===========\nunsub userdata-unique: " + props.field);
         };
-    }, [fieldName]);
+    }, [props.field]);
 
     // create JSX pieces for options in select form control
     let memberCurrentItems;
     let memberAllItems;
 
-    if (fieldName === "user") {
+    if (props.field === "user") {
         // generate alphabetized list of current members
         memberCurrentItems = props.membersCurrentList.map((option) => (
             <option key={uuidv4()} value={option.member_username}>{option.member_username}</option>
@@ -61,16 +56,16 @@ export default function FilterData(props) {
 
     // generate alphabetized list of options per field
     const selectItems = 
-        fieldName !== undefined && 
-        fieldName !== "user" && 
-        fieldName !== "notes" && 
+    props.field !== undefined && 
+    props.field !== "user" && 
+    props.field !== "notes" && 
         uniqueValues.sort((a, b) => (a > b) ? -1 : 1).map(
             (item) =>
             <option key={uuidv4()} value={item}>
-                {dataType !== "Boolean" && dataType !== "Date" && item}
-                {dataType === "Boolean" && (item === true || item === "true") && "Yes"}
-                {dataType === "Boolean" && (item === false || item === "false") && "No"}
-                {dataType === "Date" && new Date(item).toLocaleDateString('en-US', displayDate)}
+                {props.criteria_datatype !== "Boolean" && props.criteria_datatype !== "Date" && item}
+                {props.criteria_datatype === "Boolean" && (item === true || item === "true") && "Yes"}
+                {props.criteria_datatype === "Boolean" && (item === false || item === "false") && "No"}
+                {props.criteria_datatype === "Date" && new Date(item).toLocaleDateString('en-US', displayDate)}
             </option>
     );
 
@@ -78,34 +73,33 @@ export default function FilterData(props) {
     function handleFilter(e) {
         const newFilterValue = dropdownRef.current.value;
         setTrackData(newFilterValue);
-        props.filterValues(fieldName, dropdownRef.current.value);
-        history.push('/activities');
+        props.filterValues(props.field, dropdownRef.current.value, showReverseSort);
     }
 
     return (
-        <>
-            <Form.Label>{fieldLabel}: </Form.Label>
+        <div className={styles.filterOption}>
+            <Form.Label>{props.filterName}: </Form.Label>
             <Form.Control 
                 className="mb-2 mr-sm-2" 
                 size="sm" 
                 as="select" 
-                name={fieldName} 
+                name={props.field} 
                 ref={dropdownRef}
                 value={trackData}
                 onChange={handleFilter}>
 
-                {fieldName !== "sort" && <option value="">all</option>}
+                {props.field !== "sort" && <option value="">all</option>}
 
                 {selectItems}
 
-                {showCurrentMembers && fieldName === "user" && memberCurrentItems}
-                {!showCurrentMembers && fieldName === "user" && memberAllItems}
+                {showCurrentMembers && props.field === "user" && memberCurrentItems}
+                {!showCurrentMembers && props.field === "user" && memberAllItems}
 
-                {fieldName === "sort" && dataType === "None" && <option key={uuidv4()} value="date">Date</option>}
-                {fieldName === "sort" && dataType === "None" && <option key={uuidv4()} value="user">Member</option>}
+                {props.field === "sort" && props.criteria_datatype === "None" && <option key={uuidv4()} value="date">Date</option>}
+                {props.field === "sort" && props.criteria_datatype === "None" && <option key={uuidv4()} value="user">Member</option>}
             </Form.Control>
 
-            {fieldName === "user" &&
+            {props.field === "user" &&
                 <Form.Check
                     type="checkbox"
                     id="members_check"
@@ -115,6 +109,17 @@ export default function FilterData(props) {
                     onChange={(e) => setShowCurrentMembers(!showCurrentMembers)}
                 />
             }
-        </>
+
+            {props.field === "sort" &&
+                <Form.Check
+                    type="checkbox"
+                    id="reverse_check"
+                    name="reverse_check"
+                    label="Reverse"
+                    checked={showReverseSort}
+                    onChange={(e) => setShowReverseSort(!showReverseSort)}
+                />
+            }
+        </div>
     )
 }

@@ -22,8 +22,8 @@ function App() {
 // TODO - add user accounts that can share the same alliance data
     return (
         <Container
-          className="d-flex align-items-center justify-content-center"
-          style={{ minHeight: "100vh" }}
+            className="d-flex align-items-center justify-content-center"
+            style={{ minHeight: "100vh" }}
         >
             <div className="w-100">
                 
@@ -34,6 +34,7 @@ function App() {
                             <PrivateRoute exact path="/" component={Dashboard} />
                             <PrivateRoute path="/update-profile" component={UpdateProfile} />
                             <PrivateRoute path="/alliance-info" component={AllianceInfo} />
+                            { /* <PrivateRoute path="/members" component={Members} /> */ }
                             <Route path="/members" component={Members} />
                             <PrivateRoute path="/tracking-setup" component={TrackingSetup} />
                             <PrivateRoute path="/tracking" component={Tracking} />

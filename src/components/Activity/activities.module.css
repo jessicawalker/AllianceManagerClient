@@ -7,6 +7,14 @@
     padding-right: 2em;
 }
 
+.addSection {
+    text-align: center;
+}
+
+.addSection button {
+    margin: 1em;
+}
+
 table {
     margin-top: 1.8em;
 }
@@ -15,13 +23,12 @@ table {
     font-style: italic;
 }
 
-.addSection {
-    text-align: center;
-}
 
-.addSection button {
-    margin: 1em;
-}
+/*
+.activitiesTable tbody {
+    display: flex;
+    flex-direction: column;
+}*/
 
 .activitiesTable table tr td.alert-success {
     background-color: #d1e7dd;
@@ -39,35 +46,62 @@ table {
     background-color: none !important;
 }
 
-.activitiesTable table tr>th:nth-of-type(1),
-.activitiesTable table tr>td:nth-of-type(1) {
+.activitiesTable table tr>th[field="date"],
+.activitiesTable table tr>td[field="date"] {
     background-color: #fff;
     left: 0;
     max-width: 8.5em;
     min-width: 8.5em;
     position: sticky;
+    z-index: 10;
 }
 
-.activitiesTable table tr>th:nth-of-type(2),
-.activitiesTable table tr>td:nth-of-type(2) {
+.activitiesTable table tr>th+th[field="user"],
+.activitiesTable table tr>td+td[field="user"] {
     background-color: #fff;
     left: 8.5em;
     position: sticky;
+    z-index: 10;
+}
+
+.activitiesTable table tr>th[field="user"]:first-child,
+.activitiesTable table tr>td[field="user"]:first-child {
+    background-color: #fff;
+    left: 0;
+    position: sticky;
+    z-index: 10;
+}
+
+.activitiesTable table tr>th {
+    background-color: #fff;
+    position: sticky;
+    text-align: center;
+    top: 0;
+    z-index: 20;
+}
+
+.activitiesTable table tr>th[field="date"],
+.activitiesTable table tr>th+th[field="user"],
+.activitiesTable table tr>th[field="user"]:first-child {
+    z-index: 30;
 }
 
 .reportTools,
-.secondaryFilter {
+.secondaryFilter,
+.paginationTools {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
 .reportTools+.reportTools>div,
-.secondaryFilter+.secondaryFilter>div {
+.secondaryFilter+.secondaryFilter>div,
+.paginationTools+.paginationTools>div {
     padding-bottom: 0;
 }
 
-.reportTools>div {
+.reportTools>div,
+.paginationTools>div {
     align-self: baseline;
     padding: 0 2em 2em 0;
 }
@@ -95,4 +129,26 @@ span.sr-only {
     display: none;
     visibility: hidden;
     z-index: -999;
+}
+
+@media (max-width: 767px) {
+    .reportTools,
+    .secondaryFilter {
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+    }
+    .reportTools .filterItem,
+    .secondaryFilter .filterItem,
+    .paginationTools div {
+        padding: 0 0 1em 0;
+        width: 100%;
+    }
+    .paginationTools .paginationShow {
+        margin-right: 1.5em;
+        max-width: 3.5em;
+    }
+    .paginationTools .paginationShow select {
+        max-width: 3.5em;
+    }
 }

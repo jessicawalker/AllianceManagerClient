@@ -17,21 +17,20 @@ export default function Activities(props) {
     const [paginationLength, setPaginationLength] = useState(0);  // total number of items paginated
     const [searchMember, setSearchMember] = useState("");  // get member for filter
     const [searchDate, setSearchDate] = useState("");  // get date for filter
-    const [sortBy, setSortBy] = useState("");  // get date for filter
-    const [searchParams, setSearchParams] = useState([]);  // get custom params
+    const [sortBy, setSortBy] = useState("");  // get sorting of table
+    const [sortByReverse, setSortByReverse] = useState(false);  // reverse sorting of table
+    const [searchCustom, setSearchCustom] = useState("");  // get custom params
+    const [searchParams, setSearchParams] = useState("");  // get custom params
     const [viewMember, setViewMember] = useState(false);  //display username as heading
     const [viewDate, setViewDate] = useState(false);  // display date as heading
-    //const [filterKey, setFilterKey] = useState("");  // master array each user
-    //const [filterReturnValue, setFilterValue] = useState("");  // master array each user
+    //const [filterKey, setFilterKey] = useState("");  // filter key for get
+    //const [filterReturnValue, setFilterValue] = useState("");  // filter value for get
     let history = useHistory();
     const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
 
     //TODO - move date display format somewhere so that it only is defined in one location
 
     //if (props.saveDataBtn) setSearchDate(new Date(props.saveDataDate).toISOString());
-
-    //TODO - give option to view different types of reports, not just the one default
-
 
     // read current member data
     useEffect(() => {
@@ -77,42 +76,71 @@ export default function Activities(props) {
         fetchData();
     }, []);
 
-    // read tracking criteria
+    // read activity data
     useEffect(() => {
         const fetchData = async () => {
+            //const querystring = `?page=${paginationPage}&limit=${paginationLimit}&${filterKey}=${filterReturnValue}`;
+            //const paramsTest = new URLSearchParams(`page=${paginationPage}&limit=${paginationLimit}&${filterKey}=${filterReturnValue}`);
+            //console.log(paramsTest);
+            //const paramsTest = new URLSearchParams([['page', paginationPage], ['limit', paginationLimit]]);
+            //let filterList = filterKey === "" ? {} : `{"${filterKey}": "${filterReturnValue}"}`;
+
             const result = await axios.get(
                 '/userdata', {
-                params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy }
+                    params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy, filter: searchParams }
+                //params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy }
+                //params: `page: ${paginationPage}, limit: ${paginationLimit}, filter: {${filterKey}: ${filterReturnValue} }`
             }
-            );
+            )/*
+            .then(function (response) {
+                setActivityData(response.data.results);
+                setPaginationLength(response.data.total);
+                console.log(response);
+                console.log(response.request.responseText);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })*/;
+                setActivityData(result.data.results);
+                setPaginationLength(result.data.total);
             // TODO - pass in custom fields filter ability
-            setActivityData(result.data.results);
-            setPaginationLength(result.data.total);
+            //sortByReverse ? setActivityData(result.data.results) : setActivityData(result.data.results.reverse());
         };
 
         fetchData();
-    }, [paginationPage, paginationLimit, searchMember, searchDate, sortBy]);
+        return () => {
+            console.log("=========== Activities.js ===========\nunsub userdata: " + searchMember + ", " + searchDate + ", " + sortBy);
+        };
+    }, [paginationPage, paginationLimit, searchMember, searchDate, searchParams, sortBy]);
+//}, [paginationPage, paginationLimit, searchMember, searchDate, searchParams, sortBy, sortByReverse]);
 
-    function getSearchParams(filterField, filterValue) {
+    // TODO - get reverse sort to work, either in front-end only or through Mongo
+    function getSearchParams(filterField, filterValue, filterReverse) {
 
         if (filterField === "user") {
             setSearchMember(filterValue);
-            setViewMember(true);
-            if (filterValue === "") setViewMember(false);
+            if (filterValue !== "") setViewMember(true)
+                else setViewMember(false);
         }
         else if (filterField === "date") {
             setSearchDate(filterValue);
-            setViewDate(true);
-            if (filterValue === "") setViewDate(false);
+            if (filterValue !== "") setViewDate(true)
+                else setViewDate(false);
         }
         else if (filterField === "sort") {
             setSortBy(filterValue);
+            //setSortByReverse(filterReverse);
+            //if (filterReverse) setActivityData(memberActivityData.reverse());
         }
         else {
+            // keeps switching back to "" default option, not selected option
+            // is the default setting of array the problem?
             setViewDate(false);
             setViewMember(false);
-            setSearchParams(`${filterField}: ${filterValue}`);
-            console.log(filterField + ": " + filterValue)
+            //setSearchParams(`${filterField}: ${filterValue}`);
+            setSearchCustom(filterValue);
+            // HEY IDIOT YOU KEEP FORGETTING JSON NEEDS " AROUND **ALL** STRINGS, KEY *AND* VALUE
+            setSearchParams("{ \"" + filterField + "\": \"" + filterValue + "\" }");
         }
     }
 
@@ -175,7 +203,7 @@ export default function Activities(props) {
             <h2 className="text-center mb-4">Activity Logs</h2>
             <Form inline>
                 <Form.Row className={styles.reportTools}>
-                    <Col xs={4}>
+                    <Col xs={4} className={styles.filterItem}>
                         <FilterData
                             filterName="Date"
                             field="date"
@@ -183,7 +211,7 @@ export default function Activities(props) {
                             filterValues={getSearchParams}
                         />
                     </Col>
-                    <Col xs={6}>
+                    <Col xs={6} className={styles.filterItem}>
                         <FilterData
                             filterName="Member"
                             field="user"
@@ -192,7 +220,7 @@ export default function Activities(props) {
                             membersAllList={memberDataAll}
                             filterValues={getSearchParams}
                         /></Col>
-                    <Col xs={2}>
+                    <Col xs={2} className={styles.filterItem}>
                         <FilterData
                             filterName="Sort By"
                             field="sort"
@@ -212,7 +240,7 @@ export default function Activities(props) {
                                 <Form.Group>
                                     <Form.Row className={styles.secondaryFilter}>
                                         {criteriaData.map((criteria) => (
-                                            <Col xs={2}>
+                                            <Col xs={2} className={styles.filterItem}>
                                                 <FilterData
                                                     key={uuidv4()}
                                                     idValue={criteria._id}
@@ -231,8 +259,8 @@ export default function Activities(props) {
                 </Accordion>
 
 
-                <Form.Row className={styles.reportTools}>
-                    <Col xs lg="2">
+                <Form.Row className={styles.paginationTools}>
+                    <Col xs lg="2" className={styles.paginationShow}>
                         <Form.Label>Show: </Form.Label>
                         <Form.Control className="mb-2 mr-sm-2" as="select" name="paginationOptions" onChange={(e) => setPaginationLimit(e.target.value)}>
                             <option>20</option>
@@ -258,8 +286,8 @@ export default function Activities(props) {
                 <Table className="table" striped bordered hover responsive="md">
                     <thead>
                         <tr>
-                            {!viewDate && <th scope="col">Date</th>}
-                            {!viewMember && <th scope="col">User</th>}
+                            {!viewDate && <th scope="col" field="date">Date</th>}
+                            {!viewMember && <th scope="col" field="user">User</th>}
                             {criteriaData.map((criteria) => (
                                 <th scope="col" key={uuidv4()}>{criteria.criteria_name}</th>
                             ))}
@@ -267,6 +295,10 @@ export default function Activities(props) {
                         </tr>
                     </thead>
                     <tbody>
+                        { /* 
+                        add sort below to be manipulated in the DOM?? not db/params
+                        memberActivityData.sort((a, b) => (a > b) ? -1 : 1).map((data) =>
+                         */}
                         {memberActivityData
                             .map((data) => (
                                 <tr key={uuidv4()}>
