@@ -32,7 +32,7 @@ export default function TrackingCellView(props) {
     }
 
     return (
-        <td style={styleData} className={variantClass}>
+        <td style={styleData} className={variantClass} field={props.field}>
             {dataType === "Date" && new Date(trackData).toLocaleDateString('en-US', displayDate)}
             {dataType !== "Date" && trackData}
         </td>

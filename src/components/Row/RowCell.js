@@ -22,9 +22,7 @@ export default function RowCell(props) {
     // current
     const criteriaNameRef = useRef();
     const criteriaDatatypeRef = useRef();
-    
-    //TODO - check if props.dataDisplay can be changed back to state var with no lag
-    
+        
     return (
         <td>
             {props.dataDisplay==="MemberList" && props.rowType==="view" && <Form.Control plaintext readOnly defaultValue={memberUsername} />}

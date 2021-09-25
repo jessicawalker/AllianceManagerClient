@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form } from "react-bootstrap";
-//import Row from 'react-bootstrap/Row';
-//import Col from 'react-bootstrap/Col';
+import { Form, Col } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import axios from "../../axios";
 import { v4 as uuidv4 } from 'uuid';
@@ -10,9 +8,9 @@ import styles from './activities.module.css';
 export default function FilterData(props) {
     const [showCurrentMembers, setShowCurrentMembers] = useState(true);    // all members option
     const [showReverseSort, setShowReverseSort] = useState(false);    // all members option
-    const [fieldLabel, setFieldLabel] = useState(props.filterName); // label name of field
-    const [fieldName, setFieldName] = useState(props.field); // key name of field
-    const [dataType, setDataType] = useState(props.criteria_datatype); // datatype of field
+    //const [fieldLabel, setFieldLabel] = useState(props.filterName); // label name of field
+    //const [fieldName, setFieldName] = useState(props.field); // key name of field
+    //const [dataType, setDataType] = useState(props.criteria_datatype); // datatype of field
     const [trackData, setTrackData] = useState(""); // value of field
     //const [filterData, setFilterData] = useState({}); // value of chosen filters
     const [uniqueValues, setUniqueValues] = useState([]); // unique values for field
@@ -25,18 +23,26 @@ export default function FilterData(props) {
     useEffect(() => {
         const fetchData = async () => {
             if (props.field !== "user") {
-                const result = await axios.get('/userdata-unique', {
+                await axios.get('/userdata-unique', {
                     params: { unique: props.field }
-                });
-                setUniqueValues(result.data.results);
+                })
+                .then(function (response) {
+                    setUniqueValues(response.data.results);
+                    //console.log(response);
+                    //console.log(response.request.responseText);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });;
+                //setUniqueValues(result.data.results);
             }
         };
 
         fetchData();
         return () => {
-            console.log("=========== FilterData.js ===========\nunsub userdata-unique: " + props.field);
+            console.log("unsub userdata-unique: " + props.field);
         };
-    }, [props.field]);
+    }, [trackData, props.field]);
 
     // create JSX pieces for options in select form control
     let memberCurrentItems;
@@ -56,70 +62,69 @@ export default function FilterData(props) {
 
     // generate alphabetized list of options per field
     const selectItems = 
-    props.field !== undefined && 
-    props.field !== "user" && 
-    props.field !== "notes" && 
-        uniqueValues.sort((a, b) => (a > b) ? -1 : 1).map(
-            (item) =>
-            <option key={uuidv4()} value={item}>
-                {props.criteria_datatype !== "Boolean" && props.criteria_datatype !== "Date" && item}
-                {props.criteria_datatype === "Boolean" && (item === true || item === "true") && "Yes"}
-                {props.criteria_datatype === "Boolean" && (item === false || item === "false") && "No"}
-                {props.criteria_datatype === "Date" && new Date(item).toLocaleDateString('en-US', displayDate)}
-            </option>
-    );
+        props.field !== undefined && 
+        props.field !== "user" && 
+        props.field !== "notes" && 
+            uniqueValues.sort((a, b) => (a > b) ? -1 : 1).map(
+                (item) =>
+                <option key={uuidv4()} value={item} trackdataval={trackData}>
+                    {props.criteria_datatype !== "Boolean" && props.criteria_datatype !== "Date" && item}
+                    {props.criteria_datatype === "Boolean" && (item === true || item === "true") && "Yes"}
+                    {props.criteria_datatype === "Boolean" && (item === false || item === "false") && "No"}
+                    {props.criteria_datatype === "Date" && new Date(item).toLocaleDateString('en-US', displayDate)}
+                </option>
+        );
 
     // send up filter values, to combine with other filters for pagination
-    function handleFilter(e) {
-        const newFilterValue = dropdownRef.current.value;
-        setTrackData(newFilterValue);
+    function handleFilter() {
+        setTrackData(dropdownRef.current.value);
         props.filterValues(props.field, dropdownRef.current.value, showReverseSort);
     }
 
     return (
-        <div className={styles.filterOption}>
-            <Form.Label>{props.filterName}: </Form.Label>
-            <Form.Control 
-                className="mb-2 mr-sm-2" 
-                size="sm" 
-                as="select" 
-                name={props.field} 
-                ref={dropdownRef}
-                value={trackData}
-                onChange={handleFilter}>
+            <div className={styles.filterOption}>
+                <Form.Label>{props.filterName}: </Form.Label>
+                <Form.Control 
+                    className="mb-2 mr-sm-2" 
+                    size="sm" 
+                    as="select" 
+                    name={props.field} 
+                    ref={dropdownRef}
+                    value={trackData}
+                    onChange={handleFilter}>
 
-                {props.field !== "sort" && <option value="">all</option>}
+                    {props.field !== "sort" && <option value="">all</option>}
 
-                {selectItems}
+                    {selectItems}
 
-                {showCurrentMembers && props.field === "user" && memberCurrentItems}
-                {!showCurrentMembers && props.field === "user" && memberAllItems}
+                    {showCurrentMembers && props.field === "user" && memberCurrentItems}
+                    {!showCurrentMembers && props.field === "user" && memberAllItems}
 
-                {props.field === "sort" && props.criteria_datatype === "None" && <option key={uuidv4()} value="date">Date</option>}
-                {props.field === "sort" && props.criteria_datatype === "None" && <option key={uuidv4()} value="user">Member</option>}
-            </Form.Control>
+                    {props.field === "sort" && props.criteria_datatype === "None" && <option key={uuidv4()} value="date">Date</option>}
+                    {props.field === "sort" && props.criteria_datatype === "None" && <option key={uuidv4()} value="user">Member</option>}
+                </Form.Control>
 
-            {props.field === "user" &&
-                <Form.Check
-                    type="checkbox"
-                    id="members_check"
-                    name="members_check"
-                    label="Current Members Only"
-                    checked={showCurrentMembers}
-                    onChange={(e) => setShowCurrentMembers(!showCurrentMembers)}
-                />
-            }
+                {props.field === "user" &&
+                    <Form.Check
+                        type="checkbox"
+                        id="members_check"
+                        name="members_check"
+                        label="Current Members Only"
+                        checked={showCurrentMembers}
+                        onChange={(e) => setShowCurrentMembers(!showCurrentMembers)}
+                    />
+                }
 
-            {props.field === "sort" &&
-                <Form.Check
-                    type="checkbox"
-                    id="reverse_check"
-                    name="reverse_check"
-                    label="Reverse"
-                    checked={showReverseSort}
-                    onChange={(e) => setShowReverseSort(!showReverseSort)}
-                />
-            }
-        </div>
+                {props.field === "sort" &&
+                    <Form.Check
+                        type="checkbox"
+                        id="reverse_check"
+                        name="reverse_check"
+                        label="Reverse"
+                        checked={showReverseSort}
+                        onChange={(e) => setShowReverseSort(!showReverseSort)}
+                    />
+                }
+            </div>
     )
 }

@@ -7,6 +7,13 @@ import FilterData from './FilterData';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './activities.module.css';
 
+const FIELDS = {
+    USER: "user",
+    DATE: "date",
+    NOTES: "notes",
+    SORT: "sort"
+}
+
 export default function Activities(props) {
     const [memberDataCurrent, setMemberDataCurrent] = useState([{}]);    // current members list
     const [memberDataAll, setMemberDataAll] = useState([{}]);    // all members list
@@ -18,19 +25,18 @@ export default function Activities(props) {
     const [searchMember, setSearchMember] = useState("");  // get member for filter
     const [searchDate, setSearchDate] = useState("");  // get date for filter
     const [sortBy, setSortBy] = useState("");  // get sorting of table
-    const [sortByReverse, setSortByReverse] = useState(false);  // reverse sorting of table
-    const [searchCustom, setSearchCustom] = useState("");  // get custom params
+    //const [sortByReverse, setSortByReverse] = useState(false);  // reverse sorting of table
     const [searchParams, setSearchParams] = useState("");  // get custom params
+    const [searchCustom, setSearchCustom] = useState("");  // get custom params
     const [viewMember, setViewMember] = useState(false);  //display username as heading
     const [viewDate, setViewDate] = useState(false);  // display date as heading
-    //const [filterKey, setFilterKey] = useState("");  // filter key for get
-    //const [filterReturnValue, setFilterValue] = useState("");  // filter value for get
     let history = useHistory();
     const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
+    const centerVert = {
+        alignSelf: 'center'
+    };
 
     //TODO - move date display format somewhere so that it only is defined in one location
-
-    //if (props.saveDataBtn) setSearchDate(new Date(props.saveDataDate).toISOString());
 
     // read current member data
     useEffect(() => {
@@ -79,69 +85,68 @@ export default function Activities(props) {
     // read activity data
     useEffect(() => {
         const fetchData = async () => {
-            //const querystring = `?page=${paginationPage}&limit=${paginationLimit}&${filterKey}=${filterReturnValue}`;
-            //const paramsTest = new URLSearchParams(`page=${paginationPage}&limit=${paginationLimit}&${filterKey}=${filterReturnValue}`);
-            //console.log(paramsTest);
-            //const paramsTest = new URLSearchParams([['page', paginationPage], ['limit', paginationLimit]]);
-            //let filterList = filterKey === "" ? {} : `{"${filterKey}": "${filterReturnValue}"}`;
 
-            const result = await axios.get(
+            await axios.get(
                 '/userdata', {
                     params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy, filter: searchParams }
-                //params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy }
-                //params: `page: ${paginationPage}, limit: ${paginationLimit}, filter: {${filterKey}: ${filterReturnValue} }`
             }
-            )/*
+            )
             .then(function (response) {
                 setActivityData(response.data.results);
                 setPaginationLength(response.data.total);
-                console.log(response);
-                console.log(response.request.responseText);
+                //console.log(response);
+                //console.log(response.request.responseText);
             })
             .catch(function (error) {
                 console.log(error);
-            })*/;
-                setActivityData(result.data.results);
-                setPaginationLength(result.data.total);
-            // TODO - pass in custom fields filter ability
-            //sortByReverse ? setActivityData(result.data.results) : setActivityData(result.data.results.reverse());
+            });
         };
 
         fetchData();
         return () => {
             console.log("=========== Activities.js ===========\nunsub userdata: " + searchMember + ", " + searchDate + ", " + sortBy);
         };
-    }, [paginationPage, paginationLimit, searchMember, searchDate, searchParams, sortBy]);
-//}, [paginationPage, paginationLimit, searchMember, searchDate, searchParams, sortBy, sortByReverse]);
+    }, [paginationPage, paginationLimit, paginationLength, searchMember, searchDate, searchParams, sortBy]);
 
     // TODO - get reverse sort to work, either in front-end only or through Mongo
     function getSearchParams(filterField, filterValue, filterReverse) {
 
-        if (filterField === "user") {
+        console.log("filterField:");
+        console.log(filterField);
+        console.log("filterValue:");
+        console.log(filterValue);
+
+        if (filterField === FIELDS.USER) {
             setSearchMember(filterValue);
             if (filterValue !== "") setViewMember(true)
                 else setViewMember(false);
         }
-        else if (filterField === "date") {
+        else if (filterField === FIELDS.DATE) {
             setSearchDate(filterValue);
             if (filterValue !== "") setViewDate(true)
                 else setViewDate(false);
         }
-        else if (filterField === "sort") {
+        else if (filterField === FIELDS.SORT) {
             setSortBy(filterValue);
-            //setSortByReverse(filterReverse);
-            //if (filterReverse) setActivityData(memberActivityData.reverse());
         }
         else {
             // keeps switching back to "" default option, not selected option
-            // is the default setting of array the problem?
-            setViewDate(false);
-            setViewMember(false);
-            //setSearchParams(`${filterField}: ${filterValue}`);
+            // seems to be related to mapping & rerendering of components
+            setSearchParams(`{"${filterField}": "${filterValue}"}`);
             setSearchCustom(filterValue);
-            // HEY IDIOT YOU KEEP FORGETTING JSON NEEDS " AROUND **ALL** STRINGS, KEY *AND* VALUE
-            setSearchParams("{ \"" + filterField + "\": \"" + filterValue + "\" }");
+            
+            // TODO - fix boolean values input and out; some are being treated like strings; checks numbers too
         }
+    }
+
+    function clearFilters(e) {
+        e.preventDefault();
+        setSearchMember("");
+        setSearchDate("");
+        setSearchParams("");
+        setSortBy("");
+        setViewDate(false);
+        setViewMember(false);
     }
 
     // auto-generate pagination numbered items
@@ -153,10 +158,12 @@ export default function Activities(props) {
         if (paginationLimit !== "") {
             paginationItems.push(
                 <Pagination.First
+                    key={uuidv4()}
                     disabled={(paginationPage <= 1) || paginationLimit === ""}
                     onClick={(e) => setPaginationPage(1)}
                 />,
                 <Pagination.Prev
+                    key={uuidv4()}
                     disabled={(paginationPage <= 1) || paginationLimit === ""}
                     onClick={(e) => setPaginationPage(prevPage => prevPage - 1)}
                 />);
@@ -165,21 +172,21 @@ export default function Activities(props) {
 
                 // show first page and show up to 2 pages left of active page
                 if (number !== 1 && number < paginationPage - NEIGHBOR_COUNT) {
-                    paginationItems.push(<Pagination.Ellipsis />);
+                    paginationItems.push(<Pagination.Ellipsis key={uuidv4()} />);
                     number = paginationPage - NEIGHBOR_COUNT - 1;
                     continue;
                 }
 
                 //  show up to 2 pages right of active page and show last page
                 else if (number > paginationPage + NEIGHBOR_COUNT && number < Math.ceil(paginationLength / paginationLimit)) {
-                    paginationItems.push(<Pagination.Ellipsis />);
+                    paginationItems.push(<Pagination.Ellipsis key={uuidv4()} />);
                     number = Math.ceil(paginationLength / paginationLimit) - 1;
                     continue;
                 }
 
                 paginationItems.push(
                     <Pagination.Item
-                        key={number}
+                        key={uuidv4()}
                         onClick={(e) => setPaginationPage(number)}
                         active={paginationPage === number}
                     >{number}</Pagination.Item>);
@@ -187,10 +194,13 @@ export default function Activities(props) {
 
             paginationItems.push(
                 <Pagination.Next
+                    key={uuidv4()}
                     disabled={(paginationPage >= Math.ceil(paginationLength / paginationLimit) || paginationLimit === "")}
                     onClick={() => setPaginationPage(prevPage => prevPage + 1)}
+                    
                 />,
                 <Pagination.Last
+                    key={uuidv4()}
                     disabled={(paginationPage >= Math.ceil(paginationLength / paginationLimit) || paginationLimit === "")}
                     onClick={(e) => setPaginationPage(Math.ceil(paginationLength / paginationLimit))}
                 />);
@@ -206,15 +216,15 @@ export default function Activities(props) {
                     <Col xs={4} className={styles.filterItem}>
                         <FilterData
                             filterName="Date"
-                            field="date"
+                            field={FIELDS.DATE}
                             criteria_datatype="Date"
                             filterValues={getSearchParams}
                         />
                     </Col>
-                    <Col xs={6} className={styles.filterItem}>
+                    <Col xs={4} className={styles.filterItem}>
                         <FilterData
                             filterName="Member"
-                            field="user"
+                            field={FIELDS.USER}
                             criteria_datatype="String"
                             membersCurrentList={memberDataCurrent}
                             membersAllList={memberDataAll}
@@ -223,10 +233,13 @@ export default function Activities(props) {
                     <Col xs={2} className={styles.filterItem}>
                         <FilterData
                             filterName="Sort By"
-                            field="sort"
+                            field={FIELDS.SORT}
                             filterValues={getSearchParams}
                             criteria_datatype="None"
                         />
+                    </Col>
+                    <Col xs={2} className={styles.filterItem} style={centerVert}>
+                        <Button className={styles.filterClearBtn} onClick={clearFilters}>reset filters</Button>
                     </Col>
                 </Form.Row>
 
@@ -240,7 +253,7 @@ export default function Activities(props) {
                                 <Form.Group>
                                     <Form.Row className={styles.secondaryFilter}>
                                         {criteriaData.map((criteria) => (
-                                            <Col xs={2} className={styles.filterItem}>
+                                            <Col xs={2} className={styles.filterItem} key={uuidv4()}>
                                                 <FilterData
                                                     key={uuidv4()}
                                                     idValue={criteria._id}
@@ -271,7 +284,7 @@ export default function Activities(props) {
                         </Form.Control>
                     </Col>
                     <Col>
-                            <Form.Label>{paginationLength} Items: </Form.Label>
+                        <Form.Label>{paginationLength} Items: </Form.Label>
                         <Pagination>
                             {paginationItems}
                         </Pagination>
@@ -286,8 +299,8 @@ export default function Activities(props) {
                 <Table className="table" striped bordered hover responsive="md">
                     <thead>
                         <tr>
-                            {!viewDate && <th scope="col" field="date">Date</th>}
-                            {!viewMember && <th scope="col" field="user">User</th>}
+                            {!viewDate && <th scope="col" field={FIELDS.DATE}>Date</th>}
+                            {!viewMember && <th scope="col" field={FIELDS.USER}>User</th>}
                             {criteriaData.map((criteria) => (
                                 <th scope="col" key={uuidv4()}>{criteria.criteria_name}</th>
                             ))}
@@ -305,14 +318,14 @@ export default function Activities(props) {
                                     {!viewDate && <TrackingCellView
                                         key={uuidv4()}
                                         idValue={data._id}
-                                        field="date"
+                                        field={FIELDS.DATE}
                                         value={data.date}
                                         criteria_datatype="Date"
                                     />}
                                     {!viewMember && <TrackingCellView
                                         key={uuidv4()}
                                         idValue={data._id}
-                                        field="user"
+                                        field={FIELDS.USER}
                                         value={data.user}
                                         criteria_datatype="String"
                                     />}
@@ -329,7 +342,7 @@ export default function Activities(props) {
                                     <TrackingCellView
                                         key={uuidv4()}
                                         idValue={data._id}
-                                        field="notes"
+                                        field={FIELDS.NOTES}
                                         value={data.notes}
                                         criteria_datatype="String"
                                     />
