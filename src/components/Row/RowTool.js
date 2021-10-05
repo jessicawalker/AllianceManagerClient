@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import DeleteModal from '../DeleteModal';
 import axios from "../../axios";
+import { v4 as uuidv4 } from 'uuid';
 import styles from './Row.module.css';
 
 export default function RowTool(props) {
@@ -20,8 +21,14 @@ export default function RowTool(props) {
 
     const [criteriaName, setCriteriaName] = useState(props.criteriaName);
     const [criteriaDatatype, setCriteriaDatatype] = useState(props.criteriaDatatype);
+    const [activityName, setActivityName] = useState(props.activityName);
     const [enteredCriteriaNameIsValid, setEnteredCriteriaNameIsValid] = useState(false);
     const [enteredCriteriaNameTouched, setEnteredCriteriaNameTouched] = useState(false);
+
+    const [allActivities, setAllActivities] = useState(props.activitiesList);
+    const [logType, setLogType] = useState(props.logType);
+    const [enteredActivityNameIsValid, setEnteredActivityNameIsValid] = useState(false);
+    const [enteredActivityNameTouched, setEnteredActivityNameTouched] = useState(false);
 
     const [entryId, setEntryId] = useState(props.idValue);
     const [dataDisplay, setDataDisplay] = useState(props.dataDisplay);
@@ -40,22 +47,24 @@ export default function RowTool(props) {
     // tracking criteria
     const criteriaNameRef = useRef();
     const criteriaDatatypeRef = useRef();
+    const activityNameRef = useRef();
+    const logTypeRef = useRef();
+
+    // TODO - fix format of member added date to match activity logs date format
+    // TODO - update backend to handle date edits
 
 
     // Cancel
     async function handleClickCancel(e) {
         e.preventDefault();
-        if (rowType === "create") {
-            setRowType("view");
+        setRowType("view");
+        
+        if (rowType === "edit" && dataDisplay === "MemberList") {
+            history.push('/members');
         } else
-            if (rowType === "edit" && dataDisplay === "MemberList") {
-                setRowType("view");
-                history.push('/members');
-            } else
-                if (rowType === "edit" && dataDisplay === "Criteria") {
-                    setRowType("view");
-                    history.push('/tracking-setup');
-                }
+        if (rowType === "edit" && (dataDisplay === "Criteria" || dataDisplay === "Activity")) {
+            history.push('/tracking-setup');
+        }
     }
 
     async function handleClickUpdate(e) {
@@ -65,6 +74,7 @@ export default function RowTool(props) {
             const enteredMemberUsername = memberUsernameRef.current.value;
             const enteredMemberRole = memberRoleRef.current.value;
             const enteredMemberNotes = memberNotesRef.current.value;
+            const enteredMemberAddedDate = memberAddedDateRef.current.value;
 
             setEnteredUsernameTouched(true);
 
@@ -82,28 +92,38 @@ export default function RowTool(props) {
                 member_username: enteredMemberUsername,
                 member_role: enteredMemberRole,
                 member_notes: enteredMemberNotes,
-                current_member: currentMember
+                current_member: currentMember,
+                member_added_date: enteredMemberAddedDate
             };
             await props.onUpdateData(updateMemberData);
         } else
             if (dataDisplay === "Criteria") {
                 const enteredCriteriaName = criteriaNameRef.current.value;
                 const enteredCriteriaDatatype = criteriaDatatypeRef.current.value;
+                const enteredActivityName = activityNameRef.current.value;
 
                 setEnteredCriteriaNameTouched(true);
+                setEnteredActivityNameTouched(true);
 
                 if (enteredCriteriaName === "") {
                     setEnteredCriteriaNameIsValid(false);
                     return
                 }
 
+                if (enteredActivityName === "") {
+                    setEnteredActivityNameIsValid(false);
+                    return
+                }
+
                 setCriteriaName(enteredCriteriaName);
                 setCriteriaDatatype(enteredCriteriaDatatype);
+                setActivityName(enteredActivityName);
 
                 const updateCriteriaData = {
                     _id: entryId,
                     criteria_name: enteredCriteriaName,
-                    criteria_datatype: enteredCriteriaDatatype
+                    criteria_datatype: enteredCriteriaDatatype,
+                    activity_name: enteredActivityName,
                 };
                 await props.onUpdateData(updateCriteriaData);
             }
@@ -132,15 +152,18 @@ export default function RowTool(props) {
         }
         else if (dataDisplay === "Criteria") {
             setEnteredCriteriaNameTouched(true);
+            setEnteredActivityNameTouched(true);
 
             if (criteriaName === "") {
                 setEnteredCriteriaNameIsValid(false);
+                setEnteredActivityNameIsValid(false);
                 return
             }
 
             const newCriteriaData = {
                 criteria_name: criteriaName,
-                criteria_datatype: criteriaDatatype
+                criteria_datatype: criteriaDatatype,
+                activity_name: activityName
             };
             props.onSaveData(newCriteriaData);
         };
@@ -157,6 +180,9 @@ export default function RowTool(props) {
 
     const usernameInputIsInvalid = !enteredUsernameIsValid && enteredUsernameTouched;
     const criteriaNameInputIsInvalid = !enteredCriteriaNameIsValid && enteredCriteriaNameTouched;
+    const activityNameInputIsInvalid = !enteredActivityNameIsValid && enteredActivityNameTouched;
+
+    // TODO - have date input with default value show that value in the calendar
 
     return (
 
@@ -229,7 +255,33 @@ export default function RowTool(props) {
                 </td>}
             {props.dataDisplay === "MemberList" && rowType === "edit" && currentUser &&
                 <td>
-                    <Form.Control plaintext readOnly defaultValue={new Date(memberAddedDate).toLocaleDateString('en-US', displayDate)} ref={memberAddedDateRef} />
+                    <Form.Control type="date" defaultValue={new Date(memberAddedDate).toLocaleDateString('en-US', displayDate)} ref={memberAddedDateRef} />
+                </td>}
+
+
+            {props.dataDisplay === "Criteria" && rowType === "view" &&
+                <td>
+                    <Form.Control plaintext readOnly defaultValue={activityName} />
+                </td>}
+            {props.dataDisplay === "Criteria" && rowType === "edit" &&
+                <td>
+                    <Form.Control as="select" ref={activityNameRef} defaultValue={activityName}>
+                        {props.activitiesList.sort((a, b) => (a > b) ? -1 : 1).map(
+                            (item) =>
+                            <option key={uuidv4()} value={item.activity_name}>
+                                {item.activity_name}
+                            </option>)}
+                    </Form.Control>
+                </td>}
+            {props.dataDisplay === "Criteria" && rowType === "create" &&
+                <td>
+                    <Form.Control as="select" ref={activityNameRef} defaultValue={activityName}>
+                        {props.activitiesList.sort((a, b) => (a > b) ? -1 : 1).map(
+                            (item) =>
+                            <option key={uuidv4()} value={item.activity_name}>
+                                {item.activity_name}
+                            </option>)}
+                    </Form.Control>
                 </td>}
 
 
@@ -258,19 +310,59 @@ export default function RowTool(props) {
                 </td>}
             {props.dataDisplay === "Criteria" && rowType === "edit" &&
                 <td><Form.Control as="select" ref={criteriaDatatypeRef} defaultValue={criteriaDatatype}>
-                    <option>Yes/No</option>
-                    <option>Text</option>
-                    <option>Number</option>
-                    <option>Date</option>
+                    <option value="Boolean">Yes/No</option>
+                    <option value="String">Text</option>
+                    <option value="Number">Number</option>
+                    <option value="Date">Date</option>
                 </Form.Control></td>}
 
             {props.dataDisplay === "Criteria" && rowType === "create" &&
                 <td><Form.Control as="select" onChange={(e) => setCriteriaDatatype(e.target.value)}>
-                    <option>Yes/No</option>
-                    <option>Text</option>
-                    <option>Number</option>
-                    <option>Date</option>
+                    <option value="Boolean">Yes/No</option>
+                    <option value="String">Text</option>
+                    <option value="Number">Number</option>
+                    <option value="Date">Date</option>
                 </Form.Control></td>}
+
+            {props.dataDisplay === "Activity" && rowType === "view" &&
+                <td>
+                    <Form.Control plaintext readOnly defaultValue={activityName} />
+                </td>}
+            {props.dataDisplay === "Activity" && rowType === "edit" &&
+                <td>
+                    <Form.Control type="text" defaultValue={activityName} ref={activityNameRef} isInvalid={activityNameInputIsInvalid} />
+                    <Form.Control.Feedback type="invalid">
+                        Activity name must not be empty.
+                    </Form.Control.Feedback>
+                </td>}
+            {props.dataDisplay === "Activity" && rowType === "create" &&
+                <td>
+                    <FloatingLabel type="text" id="floatingActivityName" label="Activity Name" onChange={(e) => setActivityName(e.target.value)} isInvalid={activityNameInputIsInvalid} />
+                    <Form.Control.Feedback type="invalid">
+                        Activity name must not be empty.
+                    </Form.Control.Feedback>
+                </td>}
+
+                {props.dataDisplay === "Activity" && rowType === "view" &&
+                    <td>
+                        <Form.Control plaintext readOnly defaultValue={logType} />
+                    </td>}
+                {props.dataDisplay === "Activity" && rowType === "edit" &&
+                    <td>
+                        <Form.Control as="select" ref={logTypeRef} defaultValue={logType}>
+                            <option>Daily Report</option>
+                            <option>Summary Report</option>
+                            <option>On-Going Log</option>
+                        </Form.Control>
+                    </td>}
+                {props.dataDisplay === "Activity" && rowType === "create" &&
+                    <td>
+                        <Form.Control as="select" onChange={(e) => setLogType(e.target.value)}>
+                            <option>Daily Report</option>
+                            <option>Summary Report</option>
+                            <option>On-Going Log</option>
+                        </Form.Control>
+                    </td>}
 
             {rowType === "view" && currentUser &&
                 <td className="text-center">

@@ -5,6 +5,9 @@ import axios from "../../axios";
 
 export default function TrackingSetup() {
     const [criteriaData, setCriteriaData] = useState([{}]);
+    const [activityData, setActivityData] = useState([{}]);
+
+    //TODO - create criteria for more than one type of report
 
     // read criteria data
     useEffect(() => {
@@ -17,8 +20,24 @@ export default function TrackingSetup() {
 
         fetchData();
 
-        return () => {console.log("fetched")}
+        return () => {console.log("fetched trackingcriteria")}
     }, []);
+
+    // read activity data
+    useEffect(() => {
+        const fetchData = async () => {
+            let result = await axios(
+                '/activities',
+            );
+            setActivityData(result.data.results);
+        };
+
+        fetchData();
+
+        return () => {console.log("fetched activities")}
+    }, []);
+
+    const activitiesList = [...new Set(criteriaData.map(item => item.activity_name))];
 
     const addDataHandler = async (newDataRow) => {
             const enteredCriteriaName = newDataRow.criteria_name;
@@ -97,6 +116,7 @@ export default function TrackingSetup() {
                 <TrackingSetupList
                     crudState="view" 
                     allData={criteriaData}
+                    allActivities={activityData}
                     onUpdateData={updateDataHandler}
                     onDeleteData={deleteDataHandler} />
                 <RowAdd 

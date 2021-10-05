@@ -68,6 +68,8 @@ export default function TrackingLogList() {
         // TODO - go to activities page with that date
     }
 
+    // TODO - have "finish" button gray out when autosave is still working/loading
+
     return (
         <Form onSubmit={handleSubmit} className={styles.formFormat}>
 
