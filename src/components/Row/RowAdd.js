@@ -25,7 +25,7 @@ export default function RowAdd(props) {
         if (sectionType==="MemberList"){
             history.push('/members');
         } else
-        if (sectionType==="Criteria"){
+        if (sectionType==="Criteria" || sectionType==="Activity"){
             history.push('/tracking-setup');
         }
     }
@@ -45,6 +45,7 @@ export default function RowAdd(props) {
                         <RowTool 
                             crudState={rowType} 
                             dataDisplay={sectionType} 
+                            activitiesList={props.allActivities}
                             onSaveData={addDataHandler} 
                             onCancelData={handleClickCancel} 
                             currentMember={true} 

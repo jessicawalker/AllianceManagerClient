@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import TrackingSetupList from './TrackingSetupList';
 import RowAdd from '../Row/RowAdd';
+import RowList from '../Row/RowList';
+import RowTool from '../Row/RowTool';
 import axios from "../../axios";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function TrackingSetup() {
     const [criteriaData, setCriteriaData] = useState([{}]);
@@ -110,19 +113,64 @@ export default function TrackingSetup() {
                 console.log(error.response.data);
             });
     };
+
+    const activitiesHeads = ["Activity Name", "Log Type"];
+    const activitiesRow = activityData.sort((a, b) => (a > b) ? -1 : 1).map((activity) => (
+        <RowTool key={uuidv4()}
+            idValue={activity._id}
+            dataDisplay="Activity"
+            activityName={activity.activity_name}
+            logType={activity.log_type}
+            crudState="view"
+            onUpdateData={updateDataHandler}
+            onDeleteData={deleteDataHandler}
+        />
+    ))
+
+    const criteriaHeads = ["Activity Name", "Criteria Name", "Criteria Datatype"];
+    const criteriaRow = criteriaData.map((criteria) => (<RowTool key={uuidv4()}
+            idValue={criteria._id}
+            dataDisplay="Criteria"
+            activitiesList={activityData}
+            activityName={criteria.activity_name}
+            criteriaName={criteria.criteria_name}
+            criteriaDatatype={criteria.criteria_datatype}
+            crudState="view"
+            onUpdateData={updateDataHandler}
+            onDeleteData={deleteDataHandler}
+        />
+    ));
+
     return (
         <div className="navGap">
             <h2 className="text-center mb-4">Tracking Setup</h2>
-                <TrackingSetupList
+                <RowList
+                    listName="Activities to Track"
+                    allColumnHeads={activitiesHeads}
+                    rowData={activitiesRow}
+                    crudState="view" 
+                    onUpdateData={updateDataHandler}
+                    onDeleteData={deleteDataHandler}
+                />
+                <RowList
+                    listName="Criteria to Track"
+                    allColumnHeads={criteriaHeads}
+                    rowData={criteriaRow}
+                    crudState="view" 
+                    onUpdateData={updateDataHandler}
+                    onDeleteData={deleteDataHandler}
+                />
+                {/*<TrackingSetupList
                     crudState="view" 
                     allData={criteriaData}
                     allActivities={activityData}
                     onUpdateData={updateDataHandler}
-                    onDeleteData={deleteDataHandler} />
+                    onDeleteData={deleteDataHandler} />*/}
                 <RowAdd 
                     addType="Tracking Criteria" 
                     dataDisplay="Criteria"
                     crudState="view"
+                    allActivities={activityData}
                     onAddData={addDataHandler}
                 />
         </div>
