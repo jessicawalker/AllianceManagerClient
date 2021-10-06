@@ -34,6 +34,10 @@ export default function Header() {
                     <Nav className="me-auto">
                         <Nav.Link href="/activities">Activity Logs</Nav.Link>
                         <Nav.Link href="/members">Members</Nav.Link>
+                        {currentUser && <NavDropdown title="Manage Activity" id="collasible-nav-dropdown">
+                            <NavDropdown.Item href="/tracking">Record New Activity</NavDropdown.Item>
+                            <NavDropdown.Item href="/">Update Activity</NavDropdown.Item>
+                        </NavDropdown>}
                         {currentUser && <NavDropdown title="Settings" id="collasible-nav-dropdown">
                             <NavDropdown.Item href="/tracking-setup">Tracking Setup</NavDropdown.Item>
                             <NavDropdown.Divider />
