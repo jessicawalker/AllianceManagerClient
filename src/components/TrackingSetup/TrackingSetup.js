@@ -40,7 +40,7 @@ export default function TrackingSetup() {
         return () => {console.log("fetched activities")}
     }, []);
 
-    const activitiesList = [...new Set(criteriaData.map(item => item.activity_name))];
+    //const activitiesList = [...new Set(criteriaData.map(item => item.activity_name))];
 
     const addDataHandler = async (newDataRow) => {
             const enteredCriteriaName = newDataRow.criteria_name;
@@ -144,16 +144,16 @@ export default function TrackingSetup() {
     return (
         <div className="navGap">
             <h2 className="text-center mb-4">Tracking Setup</h2>
+                <h3>Activities to Track</h3>
                 <RowList
-                    listName="Activities to Track"
                     allColumnHeads={activitiesHeads}
                     rowData={activitiesRow}
                     crudState="view" 
                     onUpdateData={updateDataHandler}
                     onDeleteData={deleteDataHandler}
                 />
+                <h3>Criteria to Track</h3>
                 <RowList
-                    listName="Criteria to Track"
                     allColumnHeads={criteriaHeads}
                     rowData={criteriaRow}
                     crudState="view" 
