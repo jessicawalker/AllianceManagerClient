@@ -42,10 +42,12 @@ export default function TrackingSetup() {
     const addDataHandler = async (newDataRow) => {
             const enteredCriteriaName = newDataRow.criteria_name;
             const enteredCriteriaDatatype = newDataRow.criteria_datatype;
+            const enteredActivityName = newDataRow.activity_name;
 
             await axios.post('/trackingcriteria-add', {
                 criteria_name: enteredCriteriaName,
-                criteria_datatype: enteredCriteriaDatatype
+                criteria_datatype: enteredCriteriaDatatype,
+                activity_name: enteredActivityName
             }, {
                 headers: { 'Content-Type': 'application/json' }
             })
@@ -67,13 +69,15 @@ export default function TrackingSetup() {
 
     const updateDataHandler = async (updateCriteriaData) => {
         const currentId = updateCriteriaData._id;
+        const enteredActivityName = updateCriteriaData.activity_name;
         const enteredCriteriaName = updateCriteriaData.criteria_name;
         const enteredCriteriaDatatype = updateCriteriaData.criteria_datatype;
 
             //const updateData = async () => {
                 await axios.put(`/trackingcriteria-update/${currentId}`, {
                     criteria_name: enteredCriteriaName,
-                    criteria_datatype: enteredCriteriaDatatype
+                    criteria_datatype: enteredCriteriaDatatype,
+                    activity_name: enteredActivityName
                 }, {
                     headers: { 'Content-Type': 'application/json' }
                 })
