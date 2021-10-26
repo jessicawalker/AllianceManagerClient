@@ -12,6 +12,7 @@ export default function FilterData(props) {
     //const [fieldName, setFieldName] = useState(props.field); // key name of field
     //const [dataType, setDataType] = useState(props.criteria_datatype); // datatype of field
     const [trackData, setTrackData] = useState(""); // value of field
+    const [activityName, setActivityName] = useState(props.activityName); // value of activity name
     //const [filterData, setFilterData] = useState({}); // value of chosen filters
     const [uniqueValues, setUniqueValues] = useState([]); // unique values for field
     let history = useHistory();
@@ -21,10 +22,11 @@ export default function FilterData(props) {
 
     // read all user data, filter for field's unique values
     useEffect(() => {
+        if (props.field === "date") {setActivityName(props.activityName)};
         const fetchData = async () => {
             if (props.field !== "user" && props.field !== "activity") {
                 await axios.get('/userdata-unique', {
-                    params: { unique: props.field }
+                    params: { unique: props.field, activity_name: activityName }
                 })
                 .then(function (response) {
                     setUniqueValues(response.data.results);

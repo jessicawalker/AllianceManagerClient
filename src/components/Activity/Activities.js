@@ -251,6 +251,7 @@ export default function Activities(props) {
                         <FilterData
                             filterName="Date"
                             field={FIELDS.DATE}
+                            activityName={searchActivityLog}
                             criteria_datatype="Date"
                             filterValues={getSearchParams}
                         />
@@ -286,7 +287,7 @@ export default function Activities(props) {
                             <Card.Body>
                                 <Form.Group>
                                     <Form.Row className={styles.secondaryFilter}>
-                                        {criteriaData.map((criteria) => (
+                                        {criteriaData.filter((criteria) => criteria.activity_name === searchActivityLog).map((criteria) => (
                                             <Col xs={2} className={styles.filterItem} key={uuidv4()}>
                                                 <FilterData
                                                     key={uuidv4()}
@@ -313,7 +314,7 @@ export default function Activities(props) {
                             <option>20</option>
                             <option>50</option>
                             <option>100</option>
-                            <option>200</option>
+                            <option>250</option>
                             <option value="">Show All</option>
                         </Form.Control>
                     </Col>
@@ -335,7 +336,7 @@ export default function Activities(props) {
                         <tr>
                             {!viewDate && <th scope="col" field={FIELDS.DATE}>Date</th>}
                             {!viewMember && <th scope="col" field={FIELDS.USER}>User</th>}
-                            {criteriaData.map((criteria) => (
+                            {criteriaData.filter((criteria) => criteria.activity_name === searchActivityLog).map((criteria) => (
                                 <th scope="col" key={uuidv4()}>{criteria.criteria_name}</th>
                             ))}
                             <th>Notes</th>
@@ -364,7 +365,7 @@ export default function Activities(props) {
                                         criteria_datatype="String"
                                     />}
 
-                                    {criteriaData.map((criteria) => (
+                                    {criteriaData.filter((criteria) => criteria.activity_name === searchActivityLog).map((criteria) => (
                                         <TrackingCellView
                                             key={uuidv4()}
                                             idValue={data._id}
