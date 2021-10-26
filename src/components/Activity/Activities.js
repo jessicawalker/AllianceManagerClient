@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import styles from './activities.module.css';
 
 const FIELDS = {
+    ACTIVITY: "activity",
     USER: "user",
     DATE: "date",
     NOTES: "notes",
@@ -15,6 +16,7 @@ const FIELDS = {
 }
 
 export default function Activities(props) {
+    const [activityLogData, setActivityLogData] = useState([{}]);    // activity log list
     const [memberDataCurrent, setMemberDataCurrent] = useState([{}]);    // current members list
     const [memberDataAll, setMemberDataAll] = useState([{}]);    // all members list
     const [criteriaData, setCriteriaData] = useState([{}]);    // tracking criteria list
@@ -22,6 +24,7 @@ export default function Activities(props) {
     const [paginationPage, setPaginationPage] = useState(1);  // choose page of pagination
     const [paginationLimit, setPaginationLimit] = useState(20);  // choose number of items per page
     const [paginationLength, setPaginationLength] = useState(0);  // total number of items paginated
+    const [searchActivityLog, setSearchActivityLog] = useState("");  // get log for filter
     const [searchMember, setSearchMember] = useState("");  // get member for filter
     const [searchDate, setSearchDate] = useState("");  // get date for filter
     const [sortBy, setSortBy] = useState("");  // get sorting of table
@@ -37,6 +40,20 @@ export default function Activities(props) {
     };
 
     //TODO - move date display format somewhere so that it only is defined in one location
+    //TODO - view by each activity report with filter
+
+    // read tracking criteria
+    useEffect(() => {
+        const fetchData = async () => {
+            const result = await axios.get(
+                '/activities',
+            );
+            setActivityLogData(result.data.results);
+            setSearchActivityLog(result.data.results[0].activity_name)
+        };
+
+        fetchData();
+    }, []);
 
     // read current member data
     useEffect(() => {
@@ -88,13 +105,13 @@ export default function Activities(props) {
 
             await axios.get(
                 '/userdata', {
-                    params: { page: paginationPage, limit: paginationLimit, user: searchMember, date: searchDate, sortBy: sortBy, filter: searchParams }
+                    params: { page: paginationPage, limit: paginationLimit, activity: searchActivityLog, user: searchMember, date: searchDate, sortBy: sortBy, filter: searchParams }
             }
             )
             .then(function (response) {
                 setActivityData(response.data.results);
                 setPaginationLength(response.data.total);
-                //console.log(response);
+                console.log(response);
                 //console.log(response.request.responseText);
             })
             .catch(function (error) {
@@ -104,11 +121,16 @@ export default function Activities(props) {
 
         fetchData();
         return () => {
-            console.log("=========== Activities.js ===========\nunsub userdata: " + searchMember + ", " + searchDate + ", " + sortBy);
+            console.log("=========== Activities.js ===========\nunsub userdata: " + 
+                searchActivityLog + ", " + 
+                searchMember + ", " + 
+                searchDate + ", " + 
+                sortBy);
         };
-    }, [paginationPage, paginationLimit, paginationLength, searchMember, searchDate, searchParams, sortBy]);
+    }, [paginationPage, paginationLimit, paginationLength, searchActivityLog, searchMember, searchDate, searchParams, sortBy]);
 
     // TODO - get reverse sort to work, either in front-end only or through Mongo
+    // directorsArray.sort((a, b) => (a.display > b.display) ? 1 : -1);
     function getSearchParams(filterField, filterValue, filterReverse) {
 
         console.log("filterField:");
@@ -125,6 +147,9 @@ export default function Activities(props) {
             setSearchDate(filterValue);
             if (filterValue !== "") setViewDate(true)
                 else setViewDate(false);
+        }
+        else if (filterField === FIELDS.ACTIVITY) {
+            setSearchActivityLog(filterValue)
         }
         else if (filterField === FIELDS.SORT) {
             setSortBy(filterValue);
@@ -213,7 +238,16 @@ export default function Activities(props) {
             <h2 className="text-center mb-4">Activity Logs</h2>
             <Form inline>
                 <Form.Row className={styles.reportTools}>
-                    <Col xs={4} className={styles.filterItem}>
+                    <Col xs={3} className={styles.filterItem}>
+                        <FilterData
+                            filterName="Activity"
+                            field={FIELDS.ACTIVITY}
+                            criteria_datatype="String"
+                            activityLogsList={activityLogData}
+                            filterValues={getSearchParams}
+                        />
+                    </Col>
+                    <Col xs={3} className={styles.filterItem}>
                         <FilterData
                             filterName="Date"
                             field={FIELDS.DATE}
@@ -221,7 +255,7 @@ export default function Activities(props) {
                             filterValues={getSearchParams}
                         />
                     </Col>
-                    <Col xs={4} className={styles.filterItem}>
+                    <Col xs={3} className={styles.filterItem}>
                         <FilterData
                             filterName="Member"
                             field={FIELDS.USER}

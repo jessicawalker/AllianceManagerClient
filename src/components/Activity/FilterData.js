@@ -22,7 +22,7 @@ export default function FilterData(props) {
     // read all user data, filter for field's unique values
     useEffect(() => {
         const fetchData = async () => {
-            if (props.field !== "user") {
+            if (props.field !== "user" && props.field !== "activity") {
                 await axios.get('/userdata-unique', {
                     params: { unique: props.field }
                 })
@@ -47,6 +47,7 @@ export default function FilterData(props) {
     // create JSX pieces for options in select form control
     let memberCurrentItems;
     let memberAllItems;
+    let activityLogItems;
 
     if (props.field === "user") {
         // generate alphabetized list of current members
@@ -60,10 +61,19 @@ export default function FilterData(props) {
         ))
     }
 
+    if (props.field === "activity") {
+        // generate alphabetized list of current members
+        // activityLogsList
+        activityLogItems = props.activityLogsList.map((option) => (
+            <option key={uuidv4()} value={option.activity_name}>{option.activity_name}</option>
+        ))
+    }
+
     // generate alphabetized list of options per field
     const selectItems = 
         props.field !== undefined && 
         props.field !== "user" && 
+        props.field !== "activity" && 
         props.field !== "notes" && 
             uniqueValues.sort((a, b) => (a > b) ? -1 : 1).map(
                 (item) =>
@@ -93,9 +103,11 @@ export default function FilterData(props) {
                     value={trackData}
                     onChange={handleFilter}>
 
-                    {props.field !== "sort" && <option value="">all</option>}
+                    {props.field !== "sort" && props.field !== "activity" && <option value="">all</option>}
 
                     {selectItems}
+
+                    {props.field === "activity" && activityLogItems}
 
                     {showCurrentMembers && props.field === "user" && memberCurrentItems}
                     {!showCurrentMembers && props.field === "user" && memberAllItems}
