@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import TrackingSetupList from './TrackingSetupList';
 import RowAdd from '../Row/RowAdd';
 import RowList from '../Row/RowList';
 import RowTool from '../Row/RowTool';
@@ -9,8 +8,6 @@ import { v4 as uuidv4 } from 'uuid';
 export default function TrackingSetup() {
     const [criteriaData, setCriteriaData] = useState([{}]);
     const [activityData, setActivityData] = useState([{}]);
-
-    //TODO - create criteria for more than one type of report
 
     // read criteria data
     useEffect(() => {
@@ -145,12 +142,22 @@ export default function TrackingSetup() {
         <div className="navGap">
             <h2 className="text-center mb-4">Tracking Setup</h2>
                 <h3>Activities to Track</h3>
+                <p><strong>Daily Report:</strong> Use for activities that repeat on a daily (or nearly daily) basis <em>(e.g., daily battles, contribution activity)</em><br />
+                <strong>Summary Report:</strong> Use to record activity that spans multiple days <em>(e.g., event participation, )</em><br />
+                <strong>On-Going Log:</strong> Use for activities that have no end date <em>(e.g., milestones, member power levels)</em></p>
                 <RowList
                     allColumnHeads={activitiesHeads}
                     rowData={activitiesRow}
                     crudState="view" 
                     onUpdateData={updateDataHandler}
                     onDeleteData={deleteDataHandler}
+                />
+                <RowAdd 
+                    addType="Activity" 
+                    dataDisplay="Activity"
+                    crudState="view"
+                    allActivities={activityData}
+                    onAddData={addDataHandler}
                 />
                 <h3>Criteria to Track</h3>
                 <RowList
