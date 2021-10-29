@@ -12,7 +12,7 @@ export default function FilterData(props) {
     //const [fieldName, setFieldName] = useState(props.field); // key name of field
     //const [dataType, setDataType] = useState(props.criteria_datatype); // datatype of field
     const [trackData, setTrackData] = useState(""); // value of field
-    const [activityName, setActivityName] = useState(props.activityName); // value of activity name
+    const [activityName, setActivityName] = useState(""); // value of activity name
     //const [filterData, setFilterData] = useState({}); // value of chosen filters
     const [uniqueValues, setUniqueValues] = useState([]); // unique values for field
     let history = useHistory();
@@ -22,15 +22,16 @@ export default function FilterData(props) {
 
     // read all user data, filter for field's unique values
     useEffect(() => {
-        if (props.field === "date") {setActivityName(props.activityName)};
+        //if (props.field === "date") {setActivityName(props.activityName)};
         const fetchData = async () => {
-            if (props.field !== "user" && props.field !== "activity") {
+            if (props.field !== "user" && props.field !== "activity" && props.activityName !== undefined) {
                 await axios.get('/userdata-unique', {
-                    params: { unique: props.field, activity_name: activityName }
+                    params: { unique: props.field, activity_name: props.activityName }
+                    //params: { unique: props.field, activity_name: "" }
                 })
                 .then(function (response) {
                     setUniqueValues(response.data.results);
-                    //console.log(response);
+                    console.log(response);
                     //console.log(response.request.responseText);
                 })
                 .catch(function (error) {
@@ -44,7 +45,7 @@ export default function FilterData(props) {
         return () => {
             console.log("unsub userdata-unique: " + props.field);
         };
-    }, [trackData, props.field]);
+    }, [trackData, props.field, props.activityName]);
 
     // create JSX pieces for options in select form control
     let memberCurrentItems;
@@ -64,8 +65,7 @@ export default function FilterData(props) {
     }
 
     if (props.field === "activity") {
-        // generate alphabetized list of current members
-        // activityLogsList
+        // generate alphabetized list of activities
         activityLogItems = props.activityLogsList.map((option) => (
             <option key={uuidv4()} value={option.activity_name}>{option.activity_name}</option>
         ))
