@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Table, Pagination, Card, Accordion, Col, Row, Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import axios from "../../axios";
@@ -27,14 +27,20 @@ export default function Activities(props) {
     const [searchActivityLog, setSearchActivityLog] = useState("");  // get log for filter
     const [searchMember, setSearchMember] = useState("");  // get member for filter
     const [searchDate, setSearchDate] = useState("");  // get date for filter
-    const [sortBy, setSortBy] = useState("");  // get sorting of table
-    //const [sortByReverse, setSortByReverse] = useState(false);  // reverse sorting of table
+    const [sortBy, setSortBy] = useState("date");  // get sorting of table
+    const [sortByReverse, setSortByReverse] = useState(false);  // reverse sorting of table
     const [searchParams, setSearchParams] = useState("");  // get custom params
     const [searchCustom, setSearchCustom] = useState("");  // get custom params
     const [viewMember, setViewMember] = useState(false);  //display username as heading
     const [viewDate, setViewDate] = useState(false);  // display date as heading
+    
     let history = useHistory();
     const displayDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
+
+    const params = useMemo(() => {
+        return buildParams();
+    }, [paginationPage, paginationLimit, paginationLength, searchActivityLog, searchMember, searchDate, searchParams, sortBy, searchCustom]);
+
     const centerVert = {
         alignSelf: 'center'
     };
@@ -49,7 +55,8 @@ export default function Activities(props) {
                 '/activities',
             );
             setActivityLogData(result.data.results);
-            setSearchActivityLog(result.data.results[0].activity_name)
+            try {setSearchActivityLog(result.data.results[0].activity_name)}
+            catch (e) {console.log(e)}
         };
 
         fetchData();
@@ -105,14 +112,13 @@ export default function Activities(props) {
 
             await axios.get(
                 '/userdata', {
-                    params: { page: paginationPage, limit: paginationLimit, activity: searchActivityLog, user: searchMember, date: searchDate, sortBy: sortBy, filter: searchParams }
-            }
+                    //params: { page: paginationPage, limit: paginationLimit, activity: searchActivityLog, user: searchMember, date: searchDate, sortBy: sortBy, filter: searchParams }
+                    params: params
+                }
             )
             .then(function (response) {
                 setActivityData(response.data.results);
                 setPaginationLength(response.data.total);
-                console.log(response);
-                //console.log(response.request.responseText);
             })
             .catch(function (error) {
                 console.log(error);
@@ -127,10 +133,28 @@ export default function Activities(props) {
                 searchDate + ", " + 
                 sortBy);
         };
-    }, [paginationPage, paginationLimit, paginationLength, searchActivityLog, searchMember, searchDate, searchParams, sortBy]);
+    }, [params, paginationPage, paginationLimit, paginationLength, searchActivityLog, searchMember, searchDate, searchParams, sortBy]);
 
     // TODO - get reverse sort to work, either in front-end only or through Mongo
     // directorsArray.sort((a, b) => (a.display > b.display) ? 1 : -1);
+
+
+    function buildParams() {
+        //const paramsTest = new URLSearchParams(`page=${paginationPage}&limit=${paginationLimit}&${filterKey}=${filterReturnValue}`);
+
+        const initialParams = new URLSearchParams("");
+
+        initialParams.set("page", paginationPage);
+        initialParams.set("limit", paginationLimit);
+        initialParams.set("activity", searchActivityLog);
+        initialParams.set("user", searchMember);
+        initialParams.set("date", searchDate);
+        initialParams.set("sortBy", sortBy);
+        initialParams.set("sortByReverse", sortByReverse);
+
+        return initialParams;
+    }
+    
     function getSearchParams(filterField, filterValue, filterReverse) {
 
         console.log("filterField:");
@@ -138,30 +162,31 @@ export default function Activities(props) {
         console.log("filterValue:");
         console.log(filterValue);
 
-        if (filterField === FIELDS.USER) {
-            setSearchMember(filterValue);
-            if (filterValue !== "") setViewMember(true)
-                else setViewMember(false);
+        switch(filterField) {
+            case FIELDS.USER:
+                setSearchMember(filterValue);
+                if (filterValue !== "") setViewMember(true)
+                    else setViewMember(false);
+                break;
+            case FIELDS.DATE:
+                setSearchDate(filterValue);
+                if (filterValue !== "") setViewDate(true)
+                    else setViewDate(false);
+                break;
+            case FIELDS.ACTIVITY:
+                setSearchActivityLog(filterValue)
+                break;
+            case FIELDS.SORT:
+                setSortBy(filterValue);
+                break;
+            default:
+                setSearchParams(`{"${filterField}": "${filterValue}"}`);
+                setSearchCustom(filterValue);
+                break;
         }
-        else if (filterField === FIELDS.DATE) {
-            setSearchDate(filterValue);
-            if (filterValue !== "") setViewDate(true)
-                else setViewDate(false);
-        }
-        else if (filterField === FIELDS.ACTIVITY) {
-            setSearchActivityLog(filterValue)
-        }
-        else if (filterField === FIELDS.SORT) {
-            setSortBy(filterValue);
-        }
-        else {
-            // keeps switching back to "" default option, not selected option
-            // seems to be related to mapping & rerendering of components
-            setSearchParams(`{"${filterField}": "${filterValue}"}`);
-            setSearchCustom(filterValue);
-            
-            // TODO - fix boolean values input and out; some are being treated like strings; checks numbers too
-        }
+
+        // TODO - fix boolean values input and out; some are being treated like strings; checks numbers too
+        params.set(filterField, filterValue);
     }
 
     function clearFilters(e) {
@@ -291,6 +316,7 @@ export default function Activities(props) {
                                             <Col xs={2} className={styles.filterItem} key={uuidv4()}>
                                                 <FilterData
                                                     key={uuidv4()}
+                                                    activityName={searchActivityLog}
                                                     idValue={criteria._id}
                                                     filterName={criteria.criteria_name}
                                                     field={criteria.criteria_key}
