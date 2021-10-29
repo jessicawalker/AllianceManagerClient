@@ -50,6 +50,17 @@ export default function RowTool(props) {
     const activityNameRef = useRef();
     const logTypeRef = useRef();
 
+    const datatypeOptions = [
+        {display_name: "Yes/No", db_name: "Boolean"},
+        {display_name: "Text", db_name: "String"},
+        {display_name: "Number", db_name: "Number"},
+        {display_name: "Date", db_name: "Date"}
+        /*{"display_name": "Yes/No", "db_name": "Boolean"},
+        {"display_name": "Yes/No", "db_name": "Boolean"},
+        {"display_name": "Yes/No", "db_name": "Boolean"},
+        {"display_name": "Yes/No", "db_name": "Boolean"}*/
+    ]
+
     // TODO - fix format of member added date to match activity logs date format
     // TODO - update backend to handle date edits
 
@@ -275,7 +286,7 @@ export default function RowTool(props) {
                 </td>}
             {props.dataDisplay === "Criteria" && rowType === "create" &&
                 <td>
-                    <Form.Control as="select" ref={activityNameRef} defaultValue={activityName}>
+                    <Form.Control as="select" onChange={(e) => setActivityName(e.target.value)}>
                         {props.activitiesList.sort((a, b) => (a > b) ? -1 : 1).map(
                             (item) =>
                             <option key={uuidv4()} value={item.activity_name}>
@@ -322,7 +333,14 @@ export default function RowTool(props) {
                     <option value="String">Text</option>
                     <option value="Number">Number</option>
                     <option value="Date">Date</option>
-                </Form.Control></td>}
+
+                    {/* {datatypeOptions.map(
+                            (item) =>
+                            <option key={uuidv4()} value={item.db_name}>
+                                {item.display_name}
+                            </option>)}*/}
+                            
+                    </Form.Control></td>} 
 
             {props.dataDisplay === "Activity" && rowType === "view" &&
                 <td>
